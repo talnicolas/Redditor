@@ -23,7 +23,7 @@ public class UIMainWindow extends JFrame {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private int frameWitdh = 660;
+	private int frameWitdh = 680;
 	private int frameHeight = 480;
 	
 	private JPanel panel;
@@ -58,6 +58,8 @@ public class UIMainWindow extends JFrame {
 		JMenu menuFile= new JMenu("File");
 		
 		menuFile.add(new JMenuItem("New	"));
+		menuFile.add(new JMenuItem("Quit")).add(new JSeparator());
+		
 		JMenu menuEdit= new JMenu("Edit");
 		
 		menuEdit.add(new JMenuItem("Select"));
@@ -72,11 +74,15 @@ public class UIMainWindow extends JFrame {
 		menuMacro.add(new JMenuItem("Reset")).add(new JSeparator());
 		menuMacro.add(new JMenuItem("Play")).add(new JSeparator());
 		
+		JMenu menuAbout= new JMenu("?");
+		
+		menuAbout.add(new JMenuItem("About..."));
+		
 		menuBar = new JMenuBar();
 		menuBar.add(menuFile);
 		menuBar.add(menuEdit);
 		menuBar.add(menuMacro);
-		menuBar.add(new JMenuItem("Quit"));
+		menuBar.add(menuAbout);
 		this.setJMenuBar(menuBar);		
 	
 		
@@ -97,6 +103,7 @@ public class UIMainWindow extends JFrame {
 		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("playback_stop.png"))));
 		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("play.png"))));
 		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("reset.png"))));
+
 		panel.add(toolBar, BorderLayout.NORTH);
 	
 		//TEXTAREA SETTINGS

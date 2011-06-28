@@ -147,8 +147,7 @@ public class EditorUI extends JFrame implements IEditorView
 		textArea.setLineWrap(true);		
 		textArea.setWrapStyleWord(true);
 		
-		CaretListener caretListener = new CaretListener() {
-			
+		CaretListener caretListener = new CaretListener() {			
 			@Override
 			public void caretUpdate(CaretEvent caretEvent) {
 				caretStart = caretEvent.getDot();
@@ -182,7 +181,10 @@ public class EditorUI extends JFrame implements IEditorView
 	class QuitItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.exit(EXIT_ON_CLOSE);
+			int temp = JOptionPane.showConfirmDialog(rootPane, "Do you really really really want to quit?");
+			if(temp == JOptionPane.YES_OPTION){
+				System.exit(EXIT_ON_CLOSE);
+			}
 		}		
 	}
 	
@@ -221,9 +223,10 @@ public class EditorUI extends JFrame implements IEditorView
 	class InsertItemListener extends KeyAdapter {		
 		@Override
 		public void keyReleased(KeyEvent e) {
-			if(e.getKeyChar() == 8){
+			int temp = e.getKeyCode();
+			if(temp == 8){
 				commandManager.executeCommand(new CommandDelete());				
-			} else {
+			} else if((temp > 31 && temp < 37) && (temp > 40 && temp < 127) ) {
 				commandManager.executeCommand(new CommandInsert(e.getKeyChar()));
 			}
 		}		

@@ -17,6 +17,7 @@ public class ClipBoard
    public void save(String aSelection) 
    {
 	   this.selection = aSelection;
+	   System.out.println(this.selection);
    }
    
    public String getSelection() 

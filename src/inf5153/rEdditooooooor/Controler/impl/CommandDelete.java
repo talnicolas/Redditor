@@ -3,7 +3,6 @@
 package rEdditooooooor.Controler.impl;
 
 import rEdditooooooor.Controler.IEditorCommand;
-import rEdditooooooor.Model.Text;
 import rEdditooooooor.Model.TextConcrete;
 
 

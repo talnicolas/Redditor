@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -27,13 +26,13 @@ import javax.swing.JToolBar;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.KeyAddr;
-
+import rEdditooooooor.Controler.impl.CommandCopy;
 import rEdditooooooor.Controler.impl.CommandCut;
 import rEdditooooooor.Controler.impl.CommandDelete;
 import rEdditooooooor.Controler.impl.CommandInsert;
 import rEdditooooooor.Controler.impl.CommandManager;
 import rEdditooooooor.Controler.impl.CommandNew;
+import rEdditooooooor.Controler.impl.CommandPaste;
 import rEdditooooooor.Model.TextConcrete;
 import rEdditooooooor.View.IEditorView;
 
@@ -92,9 +91,15 @@ public class EditorUI extends JFrame implements IEditorView
 		JMenu menuEdit= new JMenu("Edit");
 		
 		menuEdit.add(new JMenuItem("Select"));
-		menuEdit.add(new JMenuItem("Copy")).add(new JSeparator());
-		menuEdit.add(new JMenuItem("Cut"));
-		menuEdit.add(new JMenuItem("Paste"));
+		JMenuItem copyItem = new JMenuItem("Copy");
+		copyItem.addActionListener(new CopyItemListener());
+		menuEdit.add(copyItem).add(new JSeparator());
+		JMenuItem cutItem = new JMenuItem("Cut");
+		cutItem.addActionListener(new CutItemListener());
+		menuEdit.add(cutItem);
+		JMenuItem pasteItem = new JMenuItem("Paste");
+		pasteItem.addActionListener(new PasteItemListener());
+		menuEdit.add(pasteItem);
 		
 		JMenu menuMacro= new JMenu("Recording");
 				
@@ -123,9 +128,15 @@ public class EditorUI extends JFrame implements IEditorView
 		newButton.addActionListener(new NewItemListener());
 		toolBar.add(newButton);
 		toolBar.addSeparator();
-		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("copy.png"))));
-		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("cut.png"))));
-		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("paste.png"))));
+		JButton copyButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("copy.png")));
+		copyButton.addActionListener(new CopyItemListener());
+		toolBar.add(copyButton);
+		JButton cutButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("cut.png")));
+		cutButton.addActionListener(new CutItemListener());
+		toolBar.add(cutButton);
+		JButton pasteButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("paste.png")));
+		pasteButton.addActionListener(new PasteItemListener());
+		toolBar.add(pasteButton);
 		toolBar.addSeparator();
 		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("undo.png"))));
 		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("redo.png"))));
@@ -149,7 +160,7 @@ public class EditorUI extends JFrame implements IEditorView
 		
 		CaretListener caretListener = new CaretListener() {			
 			@Override
-			public void caretUpdate(CaretEvent caretEvent) {
+			public void caretUpdate(CaretEvent caretEvent) {				
 				caretStart = caretEvent.getDot();
 				caretStop = caretEvent.getMark();
 			}
@@ -202,21 +213,21 @@ public class EditorUI extends JFrame implements IEditorView
 	class CutItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			//commandManager.executeCommand(new CommandCut());			
+			commandManager.executeCommand(new CommandCut(caretStart, caretStop));			
 		}		
 	}
 	
 	class CopyItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			//commandManager.executeCommand(new CommandCut());			
+			commandManager.executeCommand(new CommandCopy(caretStart, caretStop));			
 		}		
 	}
 	
 	class PasteItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			//commandManager.executeCommand(new CommandCut());			
+			commandManager.executeCommand(new CommandPaste(caretStart, caretStop));			
 		}		
 	}
 	
@@ -226,7 +237,7 @@ public class EditorUI extends JFrame implements IEditorView
 			int temp = e.getKeyCode();
 			if(temp == 8){
 				commandManager.executeCommand(new CommandDelete());				
-			} else if((temp > 31 && temp < 37) && (temp > 40 && temp < 127) ) {
+			} else if((temp == 10) || (temp > 31 && temp < 37) || (temp > 40 && temp < 127) ) {
 				commandManager.executeCommand(new CommandInsert(e.getKeyChar()));
 			}
 		}		

@@ -8,16 +8,16 @@ Save a selected text while the cut and copy operations
  */
 public class ClipBoard 
 {
-   private String selection = null;
+   private String selection;
    
    public ClipBoard() 
    {    
+	   selection = null;
    }
    
    public void save(String aSelection) 
    {
 	   this.selection = aSelection;
-	   System.out.println(this.selection);
    }
    
    public String getSelection() 

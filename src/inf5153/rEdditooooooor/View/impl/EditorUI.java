@@ -52,13 +52,15 @@ public class EditorUI extends JFrame implements IEditorView
 	
 	private int caretStart = 0;
 	private int caretStop = 0;
+	private int caretStartBefore = 0;
+	private int caretStopBefore = 0;
 	
 	private CommandManager commandManager;
 	
 	public EditorUI() {
 		
 		initializeWindow();
-		commandManager = new CommandManager();
+		commandManager = CommandManager.getInstance();
 		subject = TextConcrete.getInstance();
 		subject.attach(this);
 		this.setVisible(true);
@@ -90,7 +92,10 @@ public class EditorUI extends JFrame implements IEditorView
 		
 		JMenu menuEdit= new JMenu("Edit");
 		
-		menuEdit.add(new JMenuItem("Select"));
+		JMenuItem undoItem = new JMenuItem("Undo");
+		undoItem.addActionListener(new UndoItemListener());
+		menuEdit.add(undoItem);
+		menuEdit.add(new JMenuItem("Redo"));
 		JMenuItem copyItem = new JMenuItem("Copy");
 		copyItem.addActionListener(new CopyItemListener());
 		menuEdit.add(copyItem).add(new JSeparator());
@@ -138,7 +143,9 @@ public class EditorUI extends JFrame implements IEditorView
 		pasteButton.addActionListener(new PasteItemListener());
 		toolBar.add(pasteButton);
 		toolBar.addSeparator();
-		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("undo.png"))));
+		JButton undoButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("undo.png")));
+		undoButton.addActionListener(new UndoItemListener());
+		toolBar.add(undoButton);
 		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("redo.png"))));
 		toolBar.addSeparator();
 		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("mic.png"))));
@@ -157,7 +164,7 @@ public class EditorUI extends JFrame implements IEditorView
 		textArea.setPreferredSize(null);
 		textArea.setLineWrap(true);		
 		textArea.setWrapStyleWord(true);
-		
+	
 		CaretListener caretListener = new CaretListener() {			
 			@Override
 			public void caretUpdate(CaretEvent caretEvent) {				
@@ -165,8 +172,7 @@ public class EditorUI extends JFrame implements IEditorView
 				caretStop = caretEvent.getMark();
 			}
 		};
-		
-		textArea.addCaretListener(caretListener);
+		textArea.addCaretListener(caretListener);		
 		textArea.addKeyListener(new InsertItemListener());
 		
 		JScrollPane scroll = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -231,14 +237,26 @@ public class EditorUI extends JFrame implements IEditorView
 		}		
 	}
 	
+	class UndoItemListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			commandManager.undo();
+		}		
+	}
+	
 	class InsertItemListener extends KeyAdapter {		
+		@Override
+		public void keyPressed(KeyEvent e) {							
+			caretStartBefore = caretStart;
+			caretStopBefore = caretStop;			
+		}
 		@Override
 		public void keyReleased(KeyEvent e) {
 			int temp = e.getKeyCode();
 			if(temp == 8){
-				commandManager.executeCommand(new CommandDelete());				
+				commandManager.executeCommand(new CommandDelete(caretStartBefore, caretStopBefore));
 			} else if((temp == 10) || (temp > 31 && temp < 37) || (temp > 40 && temp < 127) ) {
-				commandManager.executeCommand(new CommandInsert(e.getKeyChar()));
+				commandManager.executeCommand(new CommandInsert(caretStartBefore, caretStopBefore, e.getKeyChar()));
 			}
 		}		
 	}

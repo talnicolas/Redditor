@@ -8,23 +8,31 @@ import rEdditooooooor.Model.TextConcrete;
 
 public class CommandDelete implements IEditorCommand 
 {
-	TextConcrete text;
+	private TextConcrete text;
+	private CommandManager cM;
+	private String state;
+	private int start;
+	private int end;
    /**
    @param Text text
     */
-   public CommandDelete() 
+   public CommandDelete(int aStart, int aEnd) 
    {
 	   this.text = TextConcrete.getInstance();
+	   this.state = this.text.getState();
+	   this.start = aStart;
+	   this.end = aEnd;
+	   this.cM = CommandManager.getInstance();
    }
    
    public void execute() 
    {
-	   this.text.delete();
+	   this.text.delete(start, end);
+	   cM.setCommand(this);
    }
 
-@Override
-public void undo() {
-	// TODO Auto-generated method stub
-	
-}
+	@Override
+	public void undo() {
+		this.text.setState(state);
+	}
 }

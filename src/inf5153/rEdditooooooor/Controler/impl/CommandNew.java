@@ -22,9 +22,7 @@ public class CommandNew implements IEditorCommand
 	   this.text.resetEverything();
    }
 
-@Override
-public void undo() {
-	// TODO Auto-generated method stub
-	
-}
+	@Override
+	public void undo() {
+	}
 }

@@ -8,7 +8,7 @@ import rEdditooooooor.Model.TextConcrete;
 
 public class CommandCopy implements IEditorCommand 
 {
-	TextConcrete text;
+	private TextConcrete text;
 	int start = 0;
 	int end = 0;
    /**
@@ -26,9 +26,7 @@ public class CommandCopy implements IEditorCommand
 	   this.text.copy(this.start, this.end);
    }
 
-@Override
-public void undo() {
-	// TODO Auto-generated method stub
-	
-}
+	@Override
+	public void undo() {
+	}
 }

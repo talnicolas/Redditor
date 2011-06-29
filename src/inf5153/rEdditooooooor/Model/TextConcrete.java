@@ -14,7 +14,7 @@ public final class TextConcrete extends Text
    private List<Character> bufferOut;
    
    private ClipBoard clipboard;
-   
+      
    private TextConcrete() 
    {
 	   this.state = new ArrayList<Character>();
@@ -22,9 +22,29 @@ public final class TextConcrete extends Text
 	   this.clipboard = new ClipBoard();
    }
    
-   public void insert(char character)
+   /*****
+    * 
+    *TODO
+    */
+   public void insert(int start, int end, char character)
    {
-	   this.state.add(character);
+	   if(start != end) {
+		   if(start > end){
+			   int back = end;
+			   end = start;
+			   start = back;
+		   }
+		   int len = end - start;
+		   for(int idx = start; idx < start + len; idx++){
+			   this.state.remove(start);
+		   }	
+		   this.state.add(start, character);
+	   } else if((this.state.size() == 0) || (start == this.state.size())){
+		   this.state.add(character);
+	   } else {
+		   this.state.add(start, character);
+	   }
+	   
 	   this.notifyObservers();
    }
    
@@ -45,10 +65,16 @@ public final class TextConcrete extends Text
    public void cut(int start, int end)
    {
 	   copy(start, end);
-	   int len = Math.abs(end - start);
-	   int tmp = Math.min(start, end);
-	   for(int idx = tmp; idx < tmp + len; idx++){
-		   this.state.remove(tmp);		   
+	   if(start != end){
+		   if(start > end){
+			   int back = end;
+			   end = start;
+			   start = back;		   
+		   }
+		   int len = end - start;
+		   for(int idx = start; idx < start + len; idx++){
+			   this.state.remove(start);
+		   }
 	   }
 	   this.notifyObservers();
    }
@@ -60,27 +86,39 @@ public final class TextConcrete extends Text
 		   if(start > end){
 			   int back = end;
 			   end = start;
-			   start = back;
+			   start = back;		   
 		   }
-		   int len = Math.abs(end - start);
+		   int len = end - start;
 		   for(int idx = start; idx < start + len; idx++){
-			   this.state.remove(start);		   
+			   this.state.remove(start);
 		   }
 	   }
 	   int idxString = 0;
-	   for(int idx = start; idx < start + toAdd.length(); idx++){		   
+	   for(int idx = start; idx < start + toAdd.length(); idx++){
 		   this.state.add(start + idxString, toAdd.charAt(idxString));
 		   idxString++;
-	   }
-	   
+	   }	   
 	   this.notifyObservers();
    }
    
-   public void delete()
+   public void delete(int start, int end)
    {
 	   if(this.state.size() > 0){
-		   char temp = this.state.remove(this.state.size() - 1);
-		   this.bufferOut.add(temp);
+		   if(start == end){
+			   char tmp = this.state.remove(start - 1);
+			   this.bufferOut.add(tmp);
+		   } else {
+			   if(start > end){
+				   int back = end;
+				   end = start;
+				   start = back;
+			   }
+			   int len = end - start;
+			   for(int idx = start; idx < start + len; idx++){
+				   this.state.remove(start);
+			   }
+		   }
+		   
 	   }
 	   this.notifyObservers();
    }
@@ -99,14 +137,17 @@ public final class TextConcrete extends Text
 	   
 	   for(int idx = 0; idx < this.state.size(); idx++){
 		   temp.append(this.state.get(idx));
-	   }
-	   
+	   }	   
 	   return temp.toString();
    }
    
-   public void setState() 
-   {
-    
+   public void setState(String aState) 
+   {    
+	   this.state.clear();
+	   for(int idx = 0; idx < aState.length(); idx++){
+		   this.state.add(aState.charAt(idx));
+	   }
+	   this.notifyObservers();
    }
    
    public void createMemento() 
@@ -119,7 +160,7 @@ public final class TextConcrete extends Text
 	   //TODO: Version 3
    }
    
-   public static TextConcrete getInstance(){
+   public static synchronized TextConcrete getInstance(){
 	   return INSTANCE;
    }
 }

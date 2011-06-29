@@ -5,7 +5,10 @@ package rEdditooooooor.Model;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * TODO: TP3
+ *
+ */
 public class CareTaker 
 {
    private List<Memento> savedStates;

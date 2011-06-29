@@ -25,8 +25,4 @@ public class CommandCopy implements IEditorCommand
    {
 	   this.text.copy(this.start, this.end);
    }
-
-	@Override
-	public void undo() {
-	}
 }

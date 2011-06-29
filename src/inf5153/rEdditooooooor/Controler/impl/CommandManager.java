@@ -12,7 +12,7 @@ public class CommandManager {
 	List<IEditorCommand> commandsUndo;
 	List<IEditorCommand> commandsRedo;
 	
-	private CommandManager() {
+	protected CommandManager() {
 		commandsUndo = new ArrayList<IEditorCommand>();
 		commandsRedo = new ArrayList<IEditorCommand>();
 	}
@@ -21,14 +21,27 @@ public class CommandManager {
 		command.execute();		
 	}	
 	
-	public void setCommand(IEditorCommand command){
+	public void setCommandUndo(IEditorCommand command){
 		this.commandsUndo.add(0, command);
 	}
 	
 	public void undo() {
 		if(this.commandsUndo.size() > 0){
-			this.commandsUndo.get(0).undo();
+			CommandUndoable command = (CommandUndoable) this.commandsUndo.get(0);
+			command.undo();
 			this.commandsUndo.remove(0);
+		}
+	}
+	
+	public void setCommandRedo(IEditorCommand command){
+		this.commandsRedo.add(0, command);
+	}
+	
+	public void redo() {
+		if(this.commandsRedo.size() > 0){
+			CommandUndoable command = (CommandUndoable) this.commandsRedo.get(0);
+			command.redo();
+			this.commandsRedo.remove(0);
 		}
 	}
 	

@@ -3,23 +3,22 @@
 package rEdditooooooor;
 
 import rEdditooooooor.View.impl.EditorUI;
+import rEdditooooooor.Controler.impl.CommandManager;
+import rEdditooooooor.Controler.impl.CommandNew;
 
 
 public class StartUp 
 {
-   public EditorUI theEditorUI;
-   
+      
    public StartUp() 
    {
     
    }
    
    public static void main(String[] args) {
-	   newEditor();
+	   new EditorUI();
+	   CommandManager cM = CommandManager.getInstance();
+	   cM.executeCommand(new CommandNew());
    }
    
-   private static void newEditor() 
-   {
-	   new EditorUI();
-   }
 }

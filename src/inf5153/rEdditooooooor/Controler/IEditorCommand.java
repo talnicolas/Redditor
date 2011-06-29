@@ -10,6 +10,4 @@ view will modify the model
 public interface IEditorCommand 
 {   
    public void execute();
-   
-   public void undo();
 }

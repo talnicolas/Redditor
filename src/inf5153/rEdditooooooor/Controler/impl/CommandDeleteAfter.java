@@ -1,13 +1,9 @@
-//Source file: C:\\Users\\nikkKO\\Desktop\\rEdditooooooor\\Controler\\CommandDelete.java
-
 package rEdditooooooor.Controler.impl;
 
 import rEdditooooooor.Controler.IEditorCommand;
 import rEdditooooooor.Model.TextConcrete;
 
-
-public class CommandDelete extends CommandUndoable implements IEditorCommand 
-{
+public class CommandDeleteAfter extends CommandUndoable implements IEditorCommand {
 	private TextConcrete text;
 	private CommandManager cM;
 	private int start;
@@ -15,7 +11,7 @@ public class CommandDelete extends CommandUndoable implements IEditorCommand
    /**
    @param Text text
     */
-   public CommandDelete(int aStart, int aEnd) 
+   public CommandDeleteAfter(int aStart, int aEnd) 
    {
 	   this.text = TextConcrete.getInstance();
 	   this.start = aStart;
@@ -25,7 +21,9 @@ public class CommandDelete extends CommandUndoable implements IEditorCommand
    
    public void execute() 
    {
-	   this.text.delete(start, end);
+	   this.text.deleteAfter(start, end);
 	   cM.setCommandUndo(this);
    }
 }
+
+

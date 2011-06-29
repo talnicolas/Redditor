@@ -2,7 +2,9 @@
 
 package rEdditooooooor.Model;
 
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class TextConcrete extends Text 
@@ -10,42 +12,38 @@ public final class TextConcrete extends Text
 
 	private static final TextConcrete INSTANCE = new TextConcrete();
 	
-   private List<Character> state;
-   private List<Character> bufferOut;
+   private volatile List<Character> state;
    
    private ClipBoard clipboard;
-      
+  
    private TextConcrete() 
    {
-	   this.state = new ArrayList<Character>();
-	   this.bufferOut = new ArrayList<Character>();
+	   this.state = Collections.synchronizedList(new ArrayList<Character>());
 	   this.clipboard = new ClipBoard();
    }
-   
-   /*****
-    * 
-    *TODO
-    */
+    
+  
    public void insert(int start, int end, char character)
-   {
-	   if(start != end) {
-		   if(start > end){
-			   int back = end;
-			   end = start;
-			   start = back;
+   {	
+	   synchronized (state) {		   
+		   if(start > this.state.size()){
+			   start = this.state.size();
+			   end = this.state.size();
 		   }
-		   int len = end - start;
-		   for(int idx = start; idx < start + len; idx++){
-			   this.state.remove(start);
-		   }	
-		   this.state.add(start, character);
-	   } else if((this.state.size() == 0) || (start == this.state.size())){
-		   this.state.add(character);
-	   } else {
-		   this.state.add(start, character);
-	   }
-	   
+		   if(start != end) {		
+			   int len = end - start;
+			   for(int idx = start; idx < start + len; idx++){
+				   this.state.remove(start);
+			   }	
+		   }		   
+		   if((this.state.size() == 0) || (start == this.state.size())){
+			   this.state.add(character);
+		   } else {	
+			   this.state.add(start, character);
+		   }
+	   } 	   
 	   this.notifyObservers();
+	   
    }
    
    public void copy(int start, int end)
@@ -103,29 +101,35 @@ public final class TextConcrete extends Text
    
    public void delete(int start, int end)
    {
-	   if(this.state.size() > 0){
+	   if(start >= 0){
 		   if(start == end){
-			   char tmp = this.state.remove(start - 1);
-			   this.bufferOut.add(tmp);
-		   } else {
-			   if(start > end){
-				   int back = end;
-				   end = start;
-				   start = back;
-			   }
+			   this.state.remove(start - 1);
+		   } else {			   
 			   int len = end - start;
 			   for(int idx = start; idx < start + len; idx++){
 				   this.state.remove(start);
 			   }
-		   }
-		   
+		   }		   
 	   }
+	   this.notifyObservers();
+   }
+   
+   public void deleteAfter(int start, int end)
+   {
+	   if(start == end){
+			   this.state.remove(start);
+	   } else {			   
+		   int len = end - start;
+		   for(int idx = start; idx < start + len; idx++){
+			   this.state.remove(start);
+		   }
+	   }		   
+	   
 	   this.notifyObservers();
    }
    
    public void resetEverything(){
 	   this.state.clear();
-	   this.bufferOut.clear();
 	   this.clipboard.save("");
 	   
 	   this.notifyObservers();
@@ -134,10 +138,9 @@ public final class TextConcrete extends Text
    public String getState() 
    {
 	   StringBuilder temp = new StringBuilder();
-	   
 	   for(int idx = 0; idx < this.state.size(); idx++){
 		   temp.append(this.state.get(idx));
-	   }	   
+	   }	
 	   return temp.toString();
    }
    

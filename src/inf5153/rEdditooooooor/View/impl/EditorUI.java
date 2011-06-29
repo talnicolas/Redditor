@@ -29,6 +29,7 @@ import javax.swing.event.CaretListener;
 import rEdditooooooor.Controler.impl.CommandCopy;
 import rEdditooooooor.Controler.impl.CommandCut;
 import rEdditooooooor.Controler.impl.CommandDelete;
+import rEdditooooooor.Controler.impl.CommandDeleteAfter;
 import rEdditooooooor.Controler.impl.CommandInsert;
 import rEdditooooooor.Controler.impl.CommandManager;
 import rEdditooooooor.Controler.impl.CommandNew;
@@ -52,8 +53,7 @@ public class EditorUI extends JFrame implements IEditorView
 	
 	private int caretStart = 0;
 	private int caretStop = 0;
-	private int caretStartBefore = 0;
-	private int caretStopBefore = 0;
+	private int caretPosToSet = 0;
 	
 	private CommandManager commandManager;
 	
@@ -92,13 +92,9 @@ public class EditorUI extends JFrame implements IEditorView
 		
 		JMenu menuEdit= new JMenu("Edit");
 		
-		JMenuItem undoItem = new JMenuItem("Undo");
-		undoItem.addActionListener(new UndoItemListener());
-		menuEdit.add(undoItem);
-		menuEdit.add(new JMenuItem("Redo"));
 		JMenuItem copyItem = new JMenuItem("Copy");
 		copyItem.addActionListener(new CopyItemListener());
-		menuEdit.add(copyItem).add(new JSeparator());
+		menuEdit.add(copyItem);
 		JMenuItem cutItem = new JMenuItem("Cut");
 		cutItem.addActionListener(new CutItemListener());
 		menuEdit.add(cutItem);
@@ -108,10 +104,22 @@ public class EditorUI extends JFrame implements IEditorView
 		
 		JMenu menuMacro= new JMenu("Recording");
 				
-		menuMacro.add(new JMenuItem("Start"));
-		menuMacro.add(new JMenuItem("Stop"));
-		menuMacro.add(new JMenuItem("Reset")).add(new JSeparator());
-		menuMacro.add(new JMenuItem("Play")).add(new JSeparator());
+		JMenuItem startItem = new JMenuItem("Start");
+		//startItem.addActionListener();
+		startItem.setEnabled(false);
+		menuMacro.add(startItem);
+		JMenuItem stopItem = new JMenuItem("Stop");
+		//stopItem.addActionListener();
+		stopItem.setEnabled(false);
+		menuMacro.add(stopItem);
+		JMenuItem resetItem = new JMenuItem("Reset");
+		//resetItem.addActionListener();
+		resetItem.setEnabled(false);
+		menuMacro.add(resetItem).add(new JSeparator());
+		JMenuItem playItem = new JMenuItem("Play");
+		//playItem.addActionListener();
+		playItem.setEnabled(false);
+		menuMacro.add(playItem).add(new JSeparator());
 		
 		JMenu menuAbout= new JMenu("?");
 		
@@ -132,27 +140,51 @@ public class EditorUI extends JFrame implements IEditorView
 		JButton newButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("new.png")));
 		newButton.addActionListener(new NewItemListener());
 		toolBar.add(newButton);
+		newButton.setToolTipText("New");
 		toolBar.addSeparator();
 		JButton copyButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("copy.png")));
 		copyButton.addActionListener(new CopyItemListener());
+		copyButton.setToolTipText("Copy");
 		toolBar.add(copyButton);
 		JButton cutButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("cut.png")));
 		cutButton.addActionListener(new CutItemListener());
+		cutButton.setToolTipText("Cut");
 		toolBar.add(cutButton);
 		JButton pasteButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("paste.png")));
 		pasteButton.addActionListener(new PasteItemListener());
+		pasteButton.setToolTipText("Paste");
 		toolBar.add(pasteButton);
 		toolBar.addSeparator();
 		JButton undoButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("undo.png")));
 		undoButton.addActionListener(new UndoItemListener());
+		undoButton.setToolTipText("Undo");
 		toolBar.add(undoButton);
-		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("redo.png"))));
+		JButton redoButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("redo.png")));
+		redoButton.addActionListener(new RedoItemListener());
+		redoButton.setToolTipText("Redo");
+		toolBar.add(redoButton);
 		toolBar.addSeparator();
-		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("mic.png"))));
-		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("playback_stop.png"))));
-		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("play.png"))));
-		toolBar.add(new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("reset.png"))));
-
+		JButton startButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("mic.png")));
+		//startButton.addActionListener();
+		startButton.setToolTipText("Start Recording");
+		startButton.setEnabled(false);
+		toolBar.add(startButton);
+		JButton stopButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("playback_stop.png")));
+		//stopButton.addActionListener();
+		stopButton.setToolTipText("Stop Recording");
+		stopButton.setEnabled(false);
+		toolBar.add(stopButton);
+		JButton playButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("play.png")));
+		//playButton.addActionListener();
+		playButton.setToolTipText("Play");
+		playButton.setEnabled(false);
+		toolBar.add(playButton);
+		JButton resetButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("reset.png")));
+		//resetButton.addActionListener();
+		resetButton.setToolTipText("Reset");
+		resetButton.setEnabled(false);
+		toolBar.add(resetButton);
+		
 		panel.add(toolBar, BorderLayout.NORTH);
 	
 		//TEXTAREA SETTINGS
@@ -191,8 +223,12 @@ public class EditorUI extends JFrame implements IEditorView
 	}
 
 	@Override
-	public void update() {
+	public void update() {	
 		this.textArea.setText(this.subject.getState());
+		if(caretPosToSet > this.subject.getState().length()){
+			caretPosToSet = this.subject.getState().length();		
+		}
+		this.textArea.setCaretPosition(caretPosToSet);		
 	}
 
 	class QuitItemListener implements ActionListener {
@@ -219,6 +255,7 @@ public class EditorUI extends JFrame implements IEditorView
 	class CutItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			caretPosToSet = caretStop;
 			commandManager.executeCommand(new CommandCut(caretStart, caretStop));			
 		}		
 	}
@@ -226,6 +263,7 @@ public class EditorUI extends JFrame implements IEditorView
 	class CopyItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			caretPosToSet = caretStop;
 			commandManager.executeCommand(new CommandCopy(caretStart, caretStop));			
 		}		
 	}
@@ -233,6 +271,7 @@ public class EditorUI extends JFrame implements IEditorView
 	class PasteItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			caretPosToSet = caretStop;
 			commandManager.executeCommand(new CommandPaste(caretStart, caretStop));			
 		}		
 	}
@@ -240,26 +279,55 @@ public class EditorUI extends JFrame implements IEditorView
 	class UndoItemListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
+			caretPosToSet = 0;
 			commandManager.undo();
 		}		
 	}
 	
-	class InsertItemListener extends KeyAdapter {		
+	class RedoItemListener implements ActionListener{
 		@Override
-		public void keyPressed(KeyEvent e) {							
-			caretStartBefore = caretStart;
-			caretStopBefore = caretStop;			
-		}
-		@Override
-		public void keyReleased(KeyEvent e) {
-			int temp = e.getKeyCode();
-			if(temp == 8){
-				commandManager.executeCommand(new CommandDelete(caretStartBefore, caretStopBefore));
-			} else if((temp == 10) || (temp > 31 && temp < 37) || (temp > 40 && temp < 127) ) {
-				commandManager.executeCommand(new CommandInsert(caretStartBefore, caretStopBefore, e.getKeyChar()));
-			}
+		public void actionPerformed(ActionEvent arg0) {
+			caretPosToSet = 0;
+			commandManager.redo();
 		}		
 	}
-	
-
+		
+	class InsertItemListener extends KeyAdapter {	
+		
+		@Override
+		public void keyPressed(KeyEvent e) {
+			
+			int temp = e.getKeyCode();
+			if(temp != 37 && temp != 38 && temp != 39 && temp != 40){
+				e.consume();
+			}
+			if(caretStart > caretStop){
+				int back = caretStart;
+				caretStart = caretStop;
+				caretStop = back;
+			}
+			caretPosToSet = caretStop;
+			
+			if(temp == 8 && caretStop != 0){
+				if(caretStart == caretStop){
+					caretPosToSet = caretStart - 1;
+				} else {
+					caretPosToSet = caretStart;
+				}
+				commandManager.executeCommand(new CommandDelete(caretStart, caretStop));
+			} else if(temp == 127 && caretStop != textArea.getText().length()){
+				caretPosToSet = caretStart;				
+				commandManager.executeCommand(new CommandDeleteAfter(caretStart, caretStop));
+			} else if((temp == 10) || (temp > 31 && temp < 37) || (temp > 40 && temp < 127) ) {
+				caretPosToSet = caretStart + 1;
+				commandManager.executeCommand(new CommandInsert(caretStart, caretStop, e.getKeyChar()));
+			} else {
+				caretPosToSet = caretStart;
+			}
+		}					
+		@Override
+		public void keyTyped(final KeyEvent e) {
+			e.consume();			
+		}
+	}
 }

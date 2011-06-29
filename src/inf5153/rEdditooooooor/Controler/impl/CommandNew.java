@@ -6,7 +6,7 @@ import rEdditooooooor.Controler.IEditorCommand;
 import rEdditooooooor.Model.TextConcrete;
 
 
-public class CommandNew implements IEditorCommand 
+public class CommandNew extends CommandManager implements IEditorCommand 
 {
    TextConcrete text;
    /**
@@ -19,10 +19,8 @@ public class CommandNew implements IEditorCommand
    
    public void execute() 
    {
+	   this.commandsRedo.clear();
+	   this.commandsUndo.clear();
 	   this.text.resetEverything();
    }
-
-	@Override
-	public void undo() {
-	}
 }

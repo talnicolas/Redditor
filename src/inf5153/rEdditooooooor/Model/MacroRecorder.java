@@ -7,7 +7,9 @@ import java.util.List;
 
 
 /**
-Saves the states of the Text buffer so they can be replayed later
+ * Saves the states of the Text buffer so they can be replayed later
+ * 
+ * TODO: TP3
  */
 public class MacroRecorder implements Memento 
 {

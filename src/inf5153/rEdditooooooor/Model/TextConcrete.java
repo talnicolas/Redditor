@@ -10,19 +10,28 @@ import java.util.List;
 public final class TextConcrete extends Text 
 {
 
-	private static final TextConcrete INSTANCE = new TextConcrete();
+   private static final TextConcrete INSTANCE = new TextConcrete();
 	
    private List<Character> state;
    
    private ClipBoard clipboard;
-  
+ 
+   /**
+    * Default Constructor
+    */
    private TextConcrete() 
    {
 	   this.state = Collections.synchronizedList(new ArrayList<Character>());
 	   this.clipboard = new ClipBoard();
    }
     
-  
+   /**
+    * Insert a character into the state of the model.
+    * @param start the index where the insertion starts
+    * @param end if different from start, a selection 
+    * 			from start to end gonna have to be deleted
+    * @param character the character to be inserted
+    */  
    public void insert(int start, int end, char character)
    {	
 	   synchronized (state) {		   
@@ -42,10 +51,14 @@ public final class TextConcrete extends Text
 			   this.state.add(start, character);
 		   }
 	   } 	   
-	   this.notifyObservers();
-	   
+	   this.notifyObservers();	   
    }
    
+   /**
+    * Copy a selection into the clipboard
+    * @param start the index of the selection start
+    * @param end the index of the selection end
+    */
    public void copy(int start, int end)
    {
 	   StringBuilder temp = new StringBuilder();
@@ -60,6 +73,11 @@ public final class TextConcrete extends Text
 	   this.clipboard.save(temp.toString());
    }
    
+   /**
+    * Save a selection into the clipboard and then delete it.
+    * @param start the index of the selection start
+    * @param end the index of the selection end
+    */
    public void cut(int start, int end)
    {
 	   copy(start, end);
@@ -77,6 +95,12 @@ public final class TextConcrete extends Text
 	   this.notifyObservers();
    }
    
+   /**
+    * Insert the previously saved selection (from copy or cut) at the specified index.
+    * @param start the index where the insertion starts
+    * @param end if different from start, a selection 
+    * 			from start to end gonna have to be deleted
+    */
    public void paste(int start, int end)
    {
 	   String toAdd = this.clipboard.getSelection();
@@ -99,6 +123,12 @@ public final class TextConcrete extends Text
 	   this.notifyObservers();
    }
    
+   /**
+    * Delete the previous character in the state
+    * @param start the index where the deletion starts (will delete start - 1)
+    * @param end if different from start, a selection 
+    * 			from start to end gonna have to be deleted
+    */
    public void delete(int start, int end)
    {
 	   if(start >= 0){
@@ -114,6 +144,12 @@ public final class TextConcrete extends Text
 	   this.notifyObservers();
    }
    
+   /**
+    * Delete the following character in the state
+    * @param start the index where the deletion starts (will delete start)
+    * @param end if different from start, a selection 
+    * 			from start to end gonna have to be deleted
+    */
    public void deleteAfter(int start, int end)
    {
 	   if(start == end){
@@ -128,6 +164,9 @@ public final class TextConcrete extends Text
 	   this.notifyObservers();
    }
    
+   /**
+    * Cleans the buffer and the clipboard
+    */
    public void resetEverything(){
 	   this.state.clear();
 	   this.clipboard.save("");
@@ -135,6 +174,9 @@ public final class TextConcrete extends Text
 	   this.notifyObservers();
    }
    
+   /**  
+    * @return the state of the model (to update the view)
+    */
    public String getState() 
    {
 	   StringBuilder temp = new StringBuilder();
@@ -144,6 +186,10 @@ public final class TextConcrete extends Text
 	   return temp.toString();
    }
    
+   /**
+    * Set the state of the model
+    * @param aState a new state
+    */
    public void setState(String aState) 
    {    
 	   this.state.clear();
@@ -163,6 +209,9 @@ public final class TextConcrete extends Text
 	   //TODO: Version 3
    }
    
+   /** 
+    * @return the unique instance of TextConcrete
+    */
    public static synchronized TextConcrete getInstance(){
 	   return INSTANCE;
    }

@@ -3,7 +3,6 @@
 package rEdditooooooor.Controler.impl;
 
 import rEdditooooooor.Controler.IEditorCommand;
-import rEdditooooooor.Model.TextConcrete;
 
 
 public class CommandInsert extends CommandUndoable implements IEditorCommand
@@ -17,17 +16,15 @@ public class CommandInsert extends CommandUndoable implements IEditorCommand
     */
    public CommandInsert(int aStart, int aEnd, char aCharacter) 
    {
-	   this.text = TextConcrete.getInstance();
 	   this.character = aCharacter;
 	   this.start = aStart;
 	   this.end = aEnd;
-	   this.cM = CommandManager.getInstance();
    }
    
    public void execute()
    {
 		this.text.insert(start, end, this.character);
-		cM.setCommandUndo(this);
+		this.cM.setCommandUndo(this);
    }
 
 	

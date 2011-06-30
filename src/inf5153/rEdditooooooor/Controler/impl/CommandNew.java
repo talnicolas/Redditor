@@ -6,7 +6,7 @@ import rEdditooooooor.Controler.IEditorCommand;
 import rEdditooooooor.Model.TextConcrete;
 
 
-public class CommandNew extends CommandManager implements IEditorCommand 
+public class CommandNew implements IEditorCommand 
 {
    TextConcrete text;
    CommandManager cM;

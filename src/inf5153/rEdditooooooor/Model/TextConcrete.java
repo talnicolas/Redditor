@@ -12,7 +12,7 @@ public final class TextConcrete extends Text
 
 	private static final TextConcrete INSTANCE = new TextConcrete();
 	
-   private volatile List<Character> state;
+   private List<Character> state;
    
    private ClipBoard clipboard;
   

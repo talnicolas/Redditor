@@ -23,6 +23,8 @@ et même suivre ces instructions :
 http://www.java.com/en/download/help/download_options.xml
 
 
+Si vous souhaitez exécuter directement l'application (sans génération du jar), vous rendre directement à l'étape 2.
+
 
     1. Génération du jar
 
@@ -49,13 +51,22 @@ http://download.oracle.com/javase/1.4.2/docs/tooldocs/windows/javac.html
     2. Exécution du programme
 
  
+      a. jar par défaut
+
+ Par défaut le fichier se trouve dans le dossier "inf5153" sous le nom "rEdditooooooor.jar").
+
+      b. jar généré
+
  Si vous vous ne trouvez plus à l'intérieur du dossier "bin" ou si vous avez déplacé le fichier "nom choisi".jar, vous devez vous rendre dans le dossier où ce dernier se trouve avec votre invite de commande.
 
+      c. Exécution
+ 
  Une fois dans le bon dossier, il ne vous reste qu'à exécuter la commande suivante pour lancer l'application:
 
               java -jar "nom choisi".jar
 
- Pour les utilisateurs de Windows, un simple double-clique sur le fichier "nom choisi".jar devrait suffire pour lancer l'application.
+
+ *Pour les utilisateurs de Windows, un simple double-clique sur le fichier "nom choisi".jar devrait suffire pour lancer l'application.
 
 
 

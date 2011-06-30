@@ -8,8 +8,12 @@ public class CommandDeleteAfter extends CommandUndoable implements IEditorComman
 	private CommandManager cM;
 	private int start;
 	private int end;
+
+
    /**
-   @param Text text
+    * Constructor
+    * @param int aStart selection start
+    * @param int aEnd selection end
     */
    public CommandDeleteAfter(int aStart, int aEnd) 
    {

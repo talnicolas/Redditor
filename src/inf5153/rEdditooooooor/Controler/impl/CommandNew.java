@@ -9,18 +9,20 @@ import rEdditooooooor.Model.TextConcrete;
 public class CommandNew extends CommandManager implements IEditorCommand 
 {
    TextConcrete text;
+   CommandManager cM;
    /**
    @param Text text
     */
    public CommandNew() 
    {
 	   this.text = TextConcrete.getInstance();
+	   this.cM = CommandManager.getInstance();
    }
    
    public void execute() 
    {
-	   this.commandsRedo.clear();
-	   this.commandsUndo.clear();
+	   this.cM.commandsRedo.clear();
+	   this.cM.commandsUndo.clear();
 	   this.text.resetEverything();
    }
 }

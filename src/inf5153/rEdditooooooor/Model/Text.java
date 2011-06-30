@@ -8,18 +8,24 @@ import java.util.List;
 import rEdditooooooor.View.IEditorView;
 
 /**
-Subject to be observed by the observers (views).
+ * Subject to be observed by the observers (views).
  */
 public class Text
 {
    private List<IEditorView> observers;
    
+   /**
+    * Default constructor
+    */
    public Text() 
    {
 	   this.observers = new ArrayList<IEditorView>();
    }
    
    /**
+    * For an observer to be updated, it needs to be attached to this part of the Model.
+    * 
+    * @param view a view that wants to observe the model
     */
    public void attach(IEditorView view) 
    {
@@ -27,6 +33,10 @@ public class Text
    }
    
    /**
+    * Remove a view that won't be updated with the Model state anymore
+    * 
+    * @param view the view to remove
+    */
    @return java.lang.Void
     */
    public void detach(IEditorView view) 
@@ -37,7 +47,8 @@ public class Text
    }
    
    /**
-   @return java.lang.Void
+    * Notify all the views that are observing the model that they need to be 
+    * updated because the model state changed.
     */
    public void notifyObservers() 
    {

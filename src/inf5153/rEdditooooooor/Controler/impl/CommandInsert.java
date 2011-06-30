@@ -12,7 +12,10 @@ public class CommandInsert extends CommandUndoable implements IEditorCommand
    private int end;
    
    /**
-   @param Text text
+    * Constructor
+    * @param int aStart selection start
+    * @param int aEnd selection end
+    * @param char aCharacter the character to insert
     */
    public CommandInsert(int aStart, int aEnd, char aCharacter) 
    {

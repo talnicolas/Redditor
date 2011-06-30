@@ -72,7 +72,7 @@ public class EditorUI extends JFrame implements IEditorView
 		this.setSize(frameWitdh, frameHeight);
 		this.setTitle("rEdditooooooooor");
 		this.setLocationRelativeTo(null);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.setMinimumSize(new Dimension(frameWitdh, 200));		
 		
 		panel = (JPanel) this.getContentPane();
@@ -212,6 +212,7 @@ public class EditorUI extends JFrame implements IEditorView
 		panel.add(scroll, BorderLayout.CENTER);
 		
 		this.setContentPane(panel);
+                addWindowListener(new WindowClosingevent());
 	}
 	
 	public int getCaretStart() {
@@ -234,7 +235,7 @@ public class EditorUI extends JFrame implements IEditorView
 	class QuitItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int temp = JOptionPane.showConfirmDialog(rootPane, "Do you really really really want to quit?");
+			int temp = JOptionPane.showConfirmDialog(rootPane, "Do you really really really want to quit?", "Quit?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(temp == JOptionPane.YES_OPTION){
 				System.exit(EXIT_ON_CLOSE);
 			}
@@ -244,7 +245,7 @@ public class EditorUI extends JFrame implements IEditorView
 	class NewItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			int temp = JOptionPane.showConfirmDialog(rootPane, "You will lose every data, are you sure?");
+			int temp = JOptionPane.showConfirmDialog(rootPane, "You will lose every data, are you sure?", "New Document", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(temp == JOptionPane.YES_OPTION){
 				commandManager.executeCommand(new CommandNew());
 			}
@@ -329,5 +330,17 @@ public class EditorUI extends JFrame implements IEditorView
 		public void keyTyped(final KeyEvent e) {
 			e.consume();			
 		}
+	}
+ 
+        class WindowClosingevent extends WindowAdapter{
+		@Override
+		public void windowClosing(WindowEvent e) {
+			int temp = JOptionPane.showConfirmDialog(rootPane, "Do you really really really want to quit?", "Quit?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if(temp == JOptionPane.YES_OPTION){
+				System.exit(EXIT_ON_CLOSE);
+			} else {
+				
+			}
+		}		
 	}
 }

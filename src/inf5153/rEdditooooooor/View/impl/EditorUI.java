@@ -57,6 +57,9 @@ public class EditorUI extends JFrame implements IEditorView
 	
 	private CommandManager commandManager;
 	
+        /**
+         * Default Constructor
+         */
 	public EditorUI() {
 		
 		initializeWindow();
@@ -212,15 +215,16 @@ public class EditorUI extends JFrame implements IEditorView
 		panel.add(scroll, BorderLayout.CENTER);
 		
 		this.setContentPane(panel);
-                addWindowListener(new WindowClosingevent());
-	}
-	
-	public int getCaretStart() {
-		return caretStart;
-	}
-	
-	public int getCaretStop() {
-		return caretStop;
+                addWindowListener(new WindowAdapter() {
+        	public void windowClosing(WindowEvent e) {
+    			int temp = JOptionPane.showConfirmDialog(rootPane, "Do you really really really want to quit?", "Quit?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+    			if(temp == JOptionPane.YES_OPTION){
+    				System.exit(EXIT_ON_CLOSE);
+    			} else {
+    				
+    			}
+    		}	
+		});
 	}
 
 	@Override
@@ -231,6 +235,10 @@ public class EditorUI extends JFrame implements IEditorView
 		}
 		this.textArea.setCaretPosition(caretPosToSet);		
 	}
+
+        ////////////////
+	// Actions to take when a button/menu item/key is pressed.
+	////////////////
 
 	class QuitItemListener implements ActionListener {
 		@Override
@@ -330,17 +338,5 @@ public class EditorUI extends JFrame implements IEditorView
 		public void keyTyped(final KeyEvent e) {
 			e.consume();			
 		}
-	}
- 
-        class WindowClosingevent extends WindowAdapter{
-		@Override
-		public void windowClosing(WindowEvent e) {
-			int temp = JOptionPane.showConfirmDialog(rootPane, "Do you really really really want to quit?", "Quit?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if(temp == JOptionPane.YES_OPTION){
-				System.exit(EXIT_ON_CLOSE);
-			} else {
-				
-			}
-		}		
 	}
 }

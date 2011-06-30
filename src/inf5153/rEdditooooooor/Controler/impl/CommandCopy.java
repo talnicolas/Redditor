@@ -11,8 +11,11 @@ public class CommandCopy implements IEditorCommand
 	private TextConcrete text;
 	int start = 0;
 	int end = 0;
+
    /**
-   @param Text text
+    * Constructor
+    * @param int aStart selection start
+    * @param int aEnd selection end
     */
    public CommandCopy(int aStart, int aEnd) 
    {

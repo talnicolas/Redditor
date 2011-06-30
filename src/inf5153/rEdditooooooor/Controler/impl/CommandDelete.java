@@ -7,10 +7,13 @@ import rEdditooooooor.Controler.IEditorCommand;
 
 public class CommandDelete extends CommandUndoable implements IEditorCommand 
 {
-	private int start;
-	private int end;
+   private int start;
+   private int end;
+
    /**
-   @param Text text
+    * Constructor
+    * @param int aStart selection start
+    * @param int aEnd selection end
     */
    public CommandDelete(int aStart, int aEnd) 
    {

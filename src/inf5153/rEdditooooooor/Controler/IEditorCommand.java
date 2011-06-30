@@ -4,10 +4,13 @@ package rEdditooooooor.Controler;
 
 
 /**
-Interface that allows developers to create custom commands, so an action in the 
-view will modify the model
+ * Interface that allows developers to create custom commands, so an action in the 
+ * view will modify the model
  */
 public interface IEditorCommand 
 {   
+   /**
+    * Execute the specific command on the Model (TextConcrete)
+    */
    public void execute();
 }

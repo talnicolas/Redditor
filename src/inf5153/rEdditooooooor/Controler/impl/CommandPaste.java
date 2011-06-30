@@ -9,8 +9,11 @@ public class CommandPaste extends CommandUndoable implements IEditorCommand
 {
 	private int start;
 	private int end;
+
    /**
-   @param Text text
+    * Constructor
+    * @param int aStart selection start
+    * @param int aEnd selection end
     */
    public CommandPaste(int aStart, int aEnd) 
    {

@@ -1,3 +1,63 @@
-This is a README
+******************************
+***** rEdditooooooor v.2 *****
+******************************
+******************************
+***                        ***
+***   Génération du jar.   ***
+***                        ***
+***          ****          *** 
+***                        ***
+*** Exécution du programme *** 
+***                        ***
+***                        ***
+******************************
+******************************
 
-jar cvfm whatever.jar MANIFEST.MF *
+Cette application a été construite autour de langage java. Java doit donc être installé sur la machine. 
+Si ce n'est pas le cas, vous pouvez le télécharger ici : 
+
+http://www.java.com/en/download/index.jsp
+
+et même suivre ces instructions :
+
+http://www.java.com/en/download/help/download_options.xml
+
+
+
+    1. Génération du jar
+
+
+ Les fichiers .class sont prêts et disponibles dans le dossier "bin". Aucun besoin donc de compiler les fichiers .java. Si vous y tenez quand même**, se référer au lien suivant pour les instructions de compilation: 
+
+http://download.oracle.com/javase/1.4.2/docs/tooldocs/windows/javac.html
+
+ Les étapes de la création du jar sont les suivantes:
+
+   - Ouvrir un invite de commande
+   - Se déplacer dans le dossier bin de ce projet
+   - Entrer la commande suivante et taper Entrée: jar cvfm "nom souhaite de l'application".jar MANIFEST.MF *
+
+ Un fichier "nom choisi".jar a été généré à l'intérieur du dossier "bin" (là où vous vous trouvez en ce moment avec votre invite de commande).
+
+ Pour l'exécuter, rendez vous au point 2.
+
+ **Attention: si vous apportez des modifications au code ou si vous recompilez les .java, il faudra recréer un fichier MANIFEST.MF dans le dossier "bin" qui contiendra la phrase suivante: Main-Class: rEdditooooooor/StartUp suivi d'un saut de ligne.
+
+
+    2. Exécution du programme
+
+ 
+ Si vous vous ne trouvez plus à l'intérieur du dossier "bin" ou si vous avez déplacé le fichier "nom choisi".jar, vous devez vous rendre dans le dossier où ce dernier se trouve avec votre invite de commande.
+
+ Une fois dans le bon dossier, il ne vous reste qu'à exécuter la commande suivante pour lancer l'application:
+
+              java -jar "nom choisi".jar
+
+ Pour les utilisateurs de Windows, un simple double-clique sur le fichier "nom choisi".jar devrait suffire pour lancer l'application.
+
+
+
+
+  Merci d'utiliser notre produit.
+
+  L'équipe de développement.

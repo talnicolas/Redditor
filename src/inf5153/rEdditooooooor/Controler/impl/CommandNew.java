@@ -10,8 +10,9 @@ public class CommandNew implements IEditorCommand
 {
    TextConcrete text;
    CommandManager cM;
+
    /**
-   @param Text text
+    * Default constructor
     */
    public CommandNew() 
    {

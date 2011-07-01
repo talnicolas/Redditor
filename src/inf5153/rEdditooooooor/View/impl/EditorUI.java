@@ -131,7 +131,17 @@ public class EditorUI extends JFrame implements IEditorView
 		
 		JMenu menuAbout= new JMenu("?");
 		
-		menuAbout.add(new JMenuItem("About..."));
+		JMenuItem aboutItem = new JMenuItem("About...");
+		final String message = "\trEdditooooooor v2.0\n\n" +
+						 "\tBy Frederic Brockow and Nicolas Tallineau\n\n" + 
+						 "\tFind the sources at: github.com/talnicolas";
+		aboutItem.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(rootPane, message, "About...", JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		menuAbout.add(aboutItem);
 		
 		menuBar = new JMenuBar();
 		menuBar.add(menuFile);

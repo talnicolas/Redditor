@@ -154,12 +154,12 @@ public final class TextConcrete extends Text
    {
 	   if(start == end){
 			   this.state.remove(start);
-	   } else {			   
+	   } else {		   
 		   int len = end - start;
 		   for(int idx = start; idx < start + len; idx++){
 			   this.state.remove(start);
-		   }
-	   }		   
+		   }  
+		}		   
 	   
 	   this.notifyObservers();
    }

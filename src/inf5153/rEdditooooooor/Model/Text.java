@@ -37,8 +37,6 @@ public class Text
     * 
     * @param view the view to remove
     */
-   @return java.lang.Void
-    */
    public void detach(IEditorView view) 
    {
 	   if(this.observers.contains(view)){

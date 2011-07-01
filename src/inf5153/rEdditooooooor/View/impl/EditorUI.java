@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -215,16 +217,7 @@ public class EditorUI extends JFrame implements IEditorView
 		panel.add(scroll, BorderLayout.CENTER);
 		
 		this.setContentPane(panel);
-                addWindowListener(new WindowAdapter() {
-        	public void windowClosing(WindowEvent e) {
-    			int temp = JOptionPane.showConfirmDialog(rootPane, "Do you really really really want to quit?", "Quit?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-    			if(temp == JOptionPane.YES_OPTION){
-    				System.exit(EXIT_ON_CLOSE);
-    			} else {
-    				
-    			}
-    		}	
-		});
+        addWindowListener(new WindowCloseListener());
 	}
 
 	@Override
@@ -324,8 +317,8 @@ public class EditorUI extends JFrame implements IEditorView
 					caretPosToSet = caretStart;
 				}
 				commandManager.executeCommand(new CommandDelete(caretStart, caretStop));
-			} else if(temp == 127 && caretStop != textArea.getText().length()){
-				caretPosToSet = caretStart;				
+			} else if(temp == 127 && caretStop != textArea.getText().length() + 1){
+				caretPosToSet = caretStart;		
 				commandManager.executeCommand(new CommandDeleteAfter(caretStart, caretStop));
 			} else if((temp == 10) || (temp > 31 && temp < 37) || (temp > 40 && temp < 127) ) {
 				caretPosToSet = caretStart + 1;
@@ -337,6 +330,18 @@ public class EditorUI extends JFrame implements IEditorView
 		@Override
 		public void keyTyped(final KeyEvent e) {
 			e.consume();			
+		}
+	}
+	
+	class WindowCloseListener extends WindowAdapter {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			int temp = JOptionPane.showConfirmDialog(rootPane, "Do you really really really want to quit?", "Quit?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if(temp == JOptionPane.YES_OPTION){
+				System.exit(EXIT_ON_CLOSE);
+			} else {
+				
+			}
 		}
 	}
 }

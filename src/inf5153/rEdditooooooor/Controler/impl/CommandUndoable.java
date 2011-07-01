@@ -6,7 +6,7 @@ import rEdditooooooor.Model.TextConcrete;
 /**
  * Undoable commands are commands that affects the state of the model
  */
-public abstract class CommandUndoable extends CommandManager implements IEditorCommand {
+public abstract class CommandUndoable implements IEditorCommand {
 
 	protected CommandManager cM;
 	protected TextConcrete text;

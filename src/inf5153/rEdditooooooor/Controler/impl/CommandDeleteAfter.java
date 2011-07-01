@@ -1,7 +1,6 @@
 package rEdditooooooor.Controler.impl;
 
 import rEdditooooooor.Controler.IEditorCommand;
-import rEdditooooooor.Model.TextConcrete;
 
 public class CommandDeleteAfter extends CommandUndoable implements IEditorCommand {
 	

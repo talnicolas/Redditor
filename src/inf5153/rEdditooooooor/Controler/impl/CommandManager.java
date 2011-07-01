@@ -8,7 +8,7 @@ import rEdditooooooor.Controler.IEditorCommand;
 /**
  * Class created to manage the commands for undo/redo purpose
  */
-public class CommandManager {
+public final class CommandManager {
 
 	private static final CommandManager INSTANCE = new CommandManager();
 	List<IEditorCommand> commandsUndo;

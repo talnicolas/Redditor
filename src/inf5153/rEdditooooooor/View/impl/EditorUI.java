@@ -39,6 +39,9 @@ import rEdditooooooor.Controler.impl.CommandPaste;
 import rEdditooooooor.Model.TextConcrete;
 import rEdditooooooor.View.IEditorView;
 
+/**
+ * Graphical view of the model
+ */
 public class EditorUI extends JFrame implements IEditorView
 {
    private TextConcrete subject;

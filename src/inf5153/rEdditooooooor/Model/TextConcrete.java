@@ -103,24 +103,26 @@ public final class TextConcrete extends Text
     */
    public void paste(int start, int end)
    {
-	   String toAdd = this.clipboard.getSelection();
-	   if(start != end){
-		   if(start > end){
-			   int back = end;
-			   end = start;
-			   start = back;		   
+	   String toAdd = this.clipboard.getSelection();	   
+	   if(toAdd.length() > 0 && toAdd != null){
+		   if(start != end){
+			   if(start > end){
+				   int back = end;
+				   end = start;
+				   start = back;		   
+			   }
+			   int len = end - start;
+			   for(int idx = start; idx < start + len; idx++){
+				   this.state.remove(start);
+			   }
 		   }
-		   int len = end - start;
-		   for(int idx = start; idx < start + len; idx++){
-			   this.state.remove(start);
-		   }
+		   int idxString = 0;
+		   for(int idx = start; idx < start + toAdd.length(); idx++){
+			   this.state.add(start + idxString, toAdd.charAt(idxString));
+			   idxString++;
+		   }	   
+		   this.notifyObservers();
 	   }
-	   int idxString = 0;
-	   for(int idx = start; idx < start + toAdd.length(); idx++){
-		   this.state.add(start + idxString, toAdd.charAt(idxString));
-		   idxString++;
-	   }	   
-	   this.notifyObservers();
    }
    
    /**

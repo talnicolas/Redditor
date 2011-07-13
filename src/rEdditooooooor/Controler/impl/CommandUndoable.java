@@ -8,8 +8,9 @@ import rEdditooooooor.Model.TextConcrete;
  */
 public abstract class CommandUndoable implements IEditorCommand {
 
-	protected CommandManager cM;
-	protected TextConcrete text;
+	private TextConcrete text;
+	private CommandManager cM;
+	
 	private String state;
 	
 	/**
@@ -18,7 +19,7 @@ public abstract class CommandUndoable implements IEditorCommand {
 	public CommandUndoable() {
 		this.text = TextConcrete.getInstance();
 		this.cM = CommandManager.getInstance();
-		this.state = this.text.getState();
+		this.state = text.getState();
 	}
 	
 	/**
@@ -26,9 +27,9 @@ public abstract class CommandUndoable implements IEditorCommand {
 	 */
 	public void undo() {
 		String previousState = this.state;
-		this.state = this.text.getState();
+		this.state = text.getState();
 		cM.setCommandRedo(this);
-		this.text.setState(previousState);	
+		text.setState(previousState);	
 	}
 	
 	/**
@@ -36,9 +37,9 @@ public abstract class CommandUndoable implements IEditorCommand {
 	 */
 	public void redo() {
 		String previousState = this.state;
-		this.state = this.text.getState();
+		this.state = text.getState();
 		cM.setCommandUndo(this);
-		this.text.setState(previousState);
+		text.setState(previousState);
 	}
 	
 }

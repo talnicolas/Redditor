@@ -10,25 +10,69 @@ import rEdditooooooor.Controler.IEditorCommand;
  */
 public final class CommandManager {
 
-	private static final CommandManager INSTANCE = new CommandManager();
-	List<IEditorCommand> commandsUndo;
-	List<IEditorCommand> commandsRedo;
+	private static final CommandManager INSTANCECM = new CommandManager();
+	private List<IEditorCommand> commandsUndo;
+	private List<IEditorCommand> commandsRedo;
+	
+	private CommandCopy commandCopy;
+	private CommandCut commandCut;
+	private CommandPaste commandPaste;
+	private CommandDelete commandDelete;
+	private CommandDeleteAfter commandDeleteAfter;
+	private CommandInsert commandInsert;
+	private CommandNew commandNew;
 	
 	/**
 	 * Default constructor
 	 */
-	protected CommandManager() {
+	private CommandManager() {
 		commandsUndo = new ArrayList<IEditorCommand>();
 		commandsRedo = new ArrayList<IEditorCommand>();
+		
+		commandCopy = new CommandCopy(0, 0);
+		commandCut = new CommandCut(0, 0);
+		commandPaste = new CommandPaste(0, 0);
+		commandDelete = new CommandDelete(0, 0);
+		commandDeleteAfter = new CommandDeleteAfter(0, 0);
+		commandInsert = new CommandInsert(0, 0, ' ');
+		commandNew = new CommandNew();
 	}
 		
-	/**
-	 * Execute the specified command, and save it in the commandsUndo buffer if it's undoable
-	 * @param command a command
-	 */	
-	public void executeCommand(IEditorCommand command){
-		command.execute();		
-	}	
+	
+	public void executeCommandNew(){
+		commandNew.execute();		
+	}
+	
+	public void executeCommandCopy(int start, int end) {
+		commandCopy.setCarets(start, end);
+		commandCopy.execute();		
+	}
+	
+	public void executeCommandCut(int start, int end) {
+		commandCut.setCarets(start, end);
+		commandCut.execute();		
+	}
+	
+	public void executeCommandPaste(int start, int end) {
+		commandPaste.setCarets(start, end);
+		commandPaste.execute();		
+	}
+	
+	public void executeCommandDelete(int start, int end) {
+		commandDelete.setCarets(start, end);
+		commandDelete.execute();		
+	}
+	
+	public void executeCommandDeleteAfter(int start, int end) {
+		commandDeleteAfter.setCarets(start, end);
+		commandDeleteAfter.execute();		
+	}
+	
+	public void executeCommandInsert(int start, int end, char character) {
+		commandInsert.setCarets(start, end);
+		commandInsert.setChar(character);
+		commandInsert.execute();		
+	}
 	
 	/**
 	 * Save an undoable command for undo purpose
@@ -36,6 +80,14 @@ public final class CommandManager {
 	 */
 	public void setCommandUndo(IEditorCommand command){
 		this.commandsUndo.add(0, command);
+	}
+	
+	public List<IEditorCommand> getCommandsUndo() {
+		return commandsUndo;
+	}
+	
+	public List<IEditorCommand> getCommandsRedo() {
+		return commandsRedo;
 	}
 	
 	/**
@@ -50,7 +102,7 @@ public final class CommandManager {
 	}
 	
 	/**
-	 * Save an redoable command for redo purpose
+	 * Save a redoable command for redo purpose
 	 * @param command an undoable command
 	 */
 	public void setCommandRedo(IEditorCommand command){
@@ -71,7 +123,7 @@ public final class CommandManager {
 	/**
 	 * @return the unique instance of CommandManager
 	 */
-	public static CommandManager getInstance() {
-		return INSTANCE;
+	public static synchronized CommandManager getInstance() {
+		return INSTANCECM;
 	}
 }

@@ -28,15 +28,6 @@ import javax.swing.JToolBar;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
-import rEdditooooooor.Controler.impl.CommandCopy;
-import rEdditooooooor.Controler.impl.CommandCut;
-import rEdditooooooor.Controler.impl.CommandDelete;
-import rEdditooooooor.Controler.impl.CommandDeleteAfter;
-import rEdditooooooor.Controler.impl.CommandInsert;
-import rEdditooooooor.Controler.impl.CommandManager;
-import rEdditooooooor.Controler.impl.CommandNew;
-import rEdditooooooor.Controler.impl.CommandPaste;
-import rEdditooooooor.Model.TextConcrete;
 import rEdditooooooor.View.IEditorView;
 
 /**
@@ -44,9 +35,7 @@ import rEdditooooooor.View.IEditorView;
  */
 public class EditorUI extends JFrame implements IEditorView
 {
-   private TextConcrete subject;
-   
-   private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	
 	private int frameWitdh = 680;
 	private int frameHeight = 480;
@@ -60,16 +49,12 @@ public class EditorUI extends JFrame implements IEditorView
 	private int caretStop = 0;
 	private int caretPosToSet = 0;
 	
-	private CommandManager commandManager;
-	
         /**
          * Default Constructor
          */
 	public EditorUI() {
 		
 		initializeWindow();
-		commandManager = CommandManager.getInstance();
-		subject = TextConcrete.getInstance();
 		subject.attach(this);
 		this.setVisible(true);
 	}
@@ -223,7 +208,7 @@ public class EditorUI extends JFrame implements IEditorView
 			}
 		};
 		textArea.addCaretListener(caretListener);		
-		textArea.addKeyListener(new InsertItemListener());
+		textArea.addKeyListener(new KeyboardListener());
 		
 		JScrollPane scroll = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		
@@ -235,9 +220,9 @@ public class EditorUI extends JFrame implements IEditorView
 
 	@Override
 	public void update() {	
-		this.textArea.setText(this.subject.getState());
-		if(caretPosToSet > this.subject.getState().length()){
-			caretPosToSet = this.subject.getState().length();		
+		this.textArea.setText(subject.getState());
+		if(caretPosToSet > subject.getState().length()){
+			caretPosToSet = subject.getState().length();		
 		}
 		this.textArea.setCaretPosition(caretPosToSet);		
 	}
@@ -261,7 +246,7 @@ public class EditorUI extends JFrame implements IEditorView
 		public void actionPerformed(ActionEvent e) {
 			int temp = JOptionPane.showConfirmDialog(rootPane, "You will lose every data, are you sure?", "New Document", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(temp == JOptionPane.YES_OPTION){
-				commandManager.executeCommand(new CommandNew());
+				commandManager.executeCommandNew();
 			}
 		}
 		
@@ -271,7 +256,7 @@ public class EditorUI extends JFrame implements IEditorView
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			caretPosToSet = caretStop;
-			commandManager.executeCommand(new CommandCut(caretStart, caretStop));			
+			commandManager.executeCommandCut(caretStart, caretStop);			
 		}		
 	}
 	
@@ -279,7 +264,7 @@ public class EditorUI extends JFrame implements IEditorView
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			caretPosToSet = caretStop;
-			commandManager.executeCommand(new CommandCopy(caretStart, caretStop));			
+			commandManager.executeCommandCopy(caretStart, caretStop);		
 		}		
 	}
 	
@@ -287,7 +272,7 @@ public class EditorUI extends JFrame implements IEditorView
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			caretPosToSet = caretStop;
-			commandManager.executeCommand(new CommandPaste(caretStart, caretStop));			
+			commandManager.executeCommandPaste(caretStart, caretStop);			
 		}		
 	}
 	
@@ -307,7 +292,7 @@ public class EditorUI extends JFrame implements IEditorView
 		}		
 	}
 		
-	class InsertItemListener extends KeyAdapter {	
+	class KeyboardListener extends KeyAdapter {	
 		
 		@Override
 		public void keyPressed(KeyEvent e) {
@@ -323,21 +308,33 @@ public class EditorUI extends JFrame implements IEditorView
 			}
 			caretPosToSet = caretStop;
 			
-			if(temp == 8 && caretStop != 0){
-				if(caretStart == caretStop){
-					caretPosToSet = caretStart - 1;
+			if(e.isControlDown()) {
+				if(e.getKeyCode() == KeyEvent.VK_C) {			
+					commandManager.executeCommandCopy(caretStart, caretStop);
+				} else if(e.getKeyCode() == KeyEvent.VK_V) {			
+					commandManager.executeCommandPaste(caretStart, caretStop);
+				} else if(e.getKeyCode() == KeyEvent.VK_X) {
+					commandManager.executeCommandCut(caretStart, caretStop);
+				}
+			}
+			
+			if (!e.isControlDown()) {
+				if(temp == 8 && caretStop != 0) {
+					if(caretStart == caretStop){
+						caretPosToSet = caretStart - 1;
+					} else {
+						caretPosToSet = caretStart;
+					}
+					commandManager.executeCommandDelete(caretStart, caretStop);
+				} else if(temp == 127 && caretStop != textArea.getText().length() + 1){
+					caretPosToSet = caretStart;		
+					commandManager.executeCommandDeleteAfter(caretStart, caretStop);
+				} else if((temp == 10) || (temp > 31 && temp < 37) || (temp > 40 && temp < 127) ) {
+					caretPosToSet = caretStart + 1;
+					commandManager.executeCommandInsert(caretStart, caretStop, e.getKeyChar());
 				} else {
 					caretPosToSet = caretStart;
 				}
-				commandManager.executeCommand(new CommandDelete(caretStart, caretStop));
-			} else if(temp == 127 && caretStop != textArea.getText().length() + 1){
-				caretPosToSet = caretStart;		
-				commandManager.executeCommand(new CommandDeleteAfter(caretStart, caretStop));
-			} else if((temp == 10) || (temp > 31 && temp < 37) || (temp > 40 && temp < 127) ) {
-				caretPosToSet = caretStart + 1;
-				commandManager.executeCommand(new CommandInsert(caretStart, caretStop, e.getKeyChar()));
-			} else {
-				caretPosToSet = caretStart;
 			}
 		}					
 		@Override

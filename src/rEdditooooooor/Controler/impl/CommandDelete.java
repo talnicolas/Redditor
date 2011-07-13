@@ -3,12 +3,16 @@
 package rEdditooooooor.Controler.impl;
 
 import rEdditooooooor.Controler.IEditorCommand;
+import rEdditooooooor.Model.TextConcrete;
 
 
 public class CommandDelete extends CommandUndoable implements IEditorCommand 
 {
-   private int start;
-   private int end;
+	private TextConcrete text;
+	private CommandManager cM;
+	
+	private int start;
+	private int end;
 
    /**
     * Constructor
@@ -17,13 +21,20 @@ public class CommandDelete extends CommandUndoable implements IEditorCommand
     */
    public CommandDelete(int aStart, int aEnd) 
    {
-	   this.start = aStart;
-	   this.end = aEnd;
+		this.text = TextConcrete.getInstance();
+		this.cM = CommandManager.getInstance();
+		this.start = aStart;
+		this.end = aEnd;
    }
    
    public void execute() 
    {
-	   this.text.delete(start, end);
-	   this.cM.setCommandUndo(this);
+	   text.delete(start, end);
+	   cM.setCommandUndo(this);
+   }
+   
+   public void setCarets(int aStart, int aEnd){
+	   this.start = aStart;
+	   this.end = aEnd;
    }
 }

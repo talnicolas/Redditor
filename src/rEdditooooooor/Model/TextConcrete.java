@@ -10,7 +10,7 @@ import java.util.List;
 public final class TextConcrete extends Text 
 {
 
-   private static final TextConcrete INSTANCE = new TextConcrete();
+   private static final TextConcrete INSTANCETX = new TextConcrete();
 	
    private List<Character> state;
    
@@ -215,6 +215,6 @@ public final class TextConcrete extends Text
     * @return the unique instance of TextConcrete
     */
    public static synchronized TextConcrete getInstance(){
-	   return INSTANCE;
+	   return INSTANCETX;
    }
 }

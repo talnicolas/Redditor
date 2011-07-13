@@ -3,10 +3,14 @@
 package rEdditooooooor.Controler.impl;
 
 import rEdditooooooor.Controler.IEditorCommand;
+import rEdditooooooor.Model.TextConcrete;
 
 
 public class CommandPaste extends CommandUndoable implements IEditorCommand 
 {
+	private TextConcrete text;
+	private CommandManager cM;
+	
 	private int start;
 	private int end;
 
@@ -17,6 +21,9 @@ public class CommandPaste extends CommandUndoable implements IEditorCommand
     */
    public CommandPaste(int aStart, int aEnd) 
    {
+	   this.text = TextConcrete.getInstance();
+	   this.cM = CommandManager.getInstance();	
+
 	   this.start = aStart;
 	   this.end = aEnd;
    }
@@ -25,5 +32,10 @@ public class CommandPaste extends CommandUndoable implements IEditorCommand
    {
 	   this.text.paste(start, end); 
 	   this.cM.setCommandUndo(this);
+   }
+   
+   public void setCarets(int aStart, int aEnd){
+	   this.start = aStart;
+	   this.end = aEnd;
    }
 }

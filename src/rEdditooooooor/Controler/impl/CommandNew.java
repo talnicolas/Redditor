@@ -8,9 +8,9 @@ import rEdditooooooor.Model.TextConcrete;
 
 public class CommandNew implements IEditorCommand 
 {
-   TextConcrete text;
-   CommandManager cM;
-
+	private TextConcrete text;
+	private CommandManager cM;
+	
    /**
     * Default constructor
     */
@@ -22,8 +22,9 @@ public class CommandNew implements IEditorCommand
    
    public void execute() 
    {
-	   this.cM.commandsRedo.clear();
-	   this.cM.commandsUndo.clear();
-	   this.text.resetEverything();
+	   this.cM.getCommandsUndo().clear();
+	   this.cM.getCommandsRedo().clear();
+	   text.resetEverything();
    }
+  
 }

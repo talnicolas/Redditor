@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import rEdditooooooor.Controler.impl.CommandUndoable;
+
 public final class TextConcrete extends Text 
 {
 
@@ -166,6 +168,29 @@ public final class TextConcrete extends Text
 	   this.notifyObservers();
    }
    
+   public void playRecordings(final List<CommandUndoable> recordings) {
+	   Thread thread = new Thread(new Runnable() {		
+			@Override
+			public void run() {
+				for(int idx = 0; idx < recordings.size(); idx++){	
+					state.clear();
+					String tmp = recordings.get(idx).getState();
+					for(int idx2 = 0; idx2 < tmp.length(); idx2++){
+						state.add(tmp.charAt(idx2));			   
+					}
+					notifyObservers();
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException interruptedException) {
+						interruptedException.printStackTrace();
+					}
+				}	  
+			}
+	   });
+	   thread.start();
+	    
+   }
+   
    /**
     * Cleans the buffer and the clipboard
     */
@@ -201,14 +226,16 @@ public final class TextConcrete extends Text
 	   this.notifyObservers();
    }
    
-   public void createMemento() 
+   public CommandUndoable createMemento() 
    {
-	   //TODO: Version 3
+	   CommandUndoable mem = new CommandUndoable();
+	   mem.setState(getState());
+	   return mem;
    }
    
-   public void getMemento() 
+   public void restoreMemento(CommandUndoable com) 
    {
-	   //TODO: Version 3
+	   setState(com.getState());
    }
    
    /** 

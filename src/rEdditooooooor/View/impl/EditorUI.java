@@ -49,6 +49,8 @@ public class EditorUI extends JFrame implements IEditorView
 	private int caretStop = 0;
 	private int caretPosToSet = 0;
 	
+	private JButton startButton, stopButton, playButton, resetButton;
+	private JMenuItem startItem, stopItem, playItem, resetItem; 
         /**
          * Default Constructor
          */
@@ -97,21 +99,17 @@ public class EditorUI extends JFrame implements IEditorView
 		
 		JMenu menuMacro= new JMenu("Recording");
 				
-		JMenuItem startItem = new JMenuItem("Start");
-		//startItem.addActionListener();
-		startItem.setEnabled(false);
+		startItem = new JMenuItem("Start");
+		startItem.addActionListener(new StartItemListener());
 		menuMacro.add(startItem);
-		JMenuItem stopItem = new JMenuItem("Stop");
-		//stopItem.addActionListener();
-		stopItem.setEnabled(false);
+		stopItem = new JMenuItem("Stop");
+		stopItem.addActionListener(new StopItemListener());
 		menuMacro.add(stopItem);
-		JMenuItem resetItem = new JMenuItem("Reset");
-		//resetItem.addActionListener();
-		resetItem.setEnabled(false);
+		resetItem = new JMenuItem("Reset");
+		resetItem.addActionListener(new RedoItemListener());
 		menuMacro.add(resetItem).add(new JSeparator());
-		JMenuItem playItem = new JMenuItem("Play");
-		//playItem.addActionListener();
-		playItem.setEnabled(false);
+		playItem = new JMenuItem("Play");
+		playItem.addActionListener(new PlayItemListener());
 		menuMacro.add(playItem).add(new JSeparator());
 		
 		JMenu menuAbout= new JMenu("?");
@@ -167,25 +165,27 @@ public class EditorUI extends JFrame implements IEditorView
 		redoButton.setToolTipText("Redo");
 		toolBar.add(redoButton);
 		toolBar.addSeparator();
-		JButton startButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("mic.png")));
-		//startButton.addActionListener();
+		startButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("mic.png")));
+		startButton.addActionListener(new StartItemListener());
+		startButton.setActionCommand("enable");
 		startButton.setToolTipText("Start Recording");
-		startButton.setEnabled(false);
 		toolBar.add(startButton);
-		JButton stopButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("playback_stop.png")));
-		//stopButton.addActionListener();
-		stopButton.setToolTipText("Stop Recording");
+		stopButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("playback_stop.png")));
+		stopButton.addActionListener(new StopItemListener());
 		stopButton.setEnabled(false);
+		stopButton.setActionCommand("enable");
+		stopButton.setToolTipText("Stop Recording");
 		toolBar.add(stopButton);
-		JButton playButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("play.png")));
-		//playButton.addActionListener();
-		playButton.setToolTipText("Play");
+		playButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("play.png")));
+		playButton.addActionListener(new PlayItemListener());
 		playButton.setEnabled(false);
+		playButton.setToolTipText("Play");
 		toolBar.add(playButton);
-		JButton resetButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("reset.png")));
-		//resetButton.addActionListener();
-		resetButton.setToolTipText("Reset");
+		resetButton = new JButton(new ImageIcon(this.getClass().getClassLoader().getResource("reset.png")));
+		resetButton.addActionListener(new ResetItemListener());
 		resetButton.setEnabled(false);
+		resetButton.setActionCommand("disable");
+		resetButton.setToolTipText("Reset");
 		toolBar.add(resetButton);
 		
 		panel.add(toolBar, BorderLayout.NORTH);
@@ -217,7 +217,7 @@ public class EditorUI extends JFrame implements IEditorView
 		this.setContentPane(panel);
         addWindowListener(new WindowCloseListener());
 	}
-
+	
 	@Override
 	public void update() {	
 		this.textArea.setText(subject.getState());
@@ -227,7 +227,7 @@ public class EditorUI extends JFrame implements IEditorView
 		this.textArea.setCaretPosition(caretPosToSet);		
 	}
 
-        ////////////////
+    ////////////////
 	// Actions to take when a button/menu item/key is pressed.
 	////////////////
 
@@ -291,7 +291,46 @@ public class EditorUI extends JFrame implements IEditorView
 			commandManager.redo();
 		}		
 	}
-		
+
+	class StartItemListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if((arg0.getActionCommand()).equals("enable")){
+				stopButton.setEnabled(true);
+			}
+			commandManager.executeCommandStart();
+		}		
+	}
+	
+	class StopItemListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if((arg0.getActionCommand()).equals("enable")){
+				playButton.setEnabled(true);
+				resetButton.setEnabled(true);
+			}
+			commandManager.executeCommandStop();
+		}		
+	}
+	
+	class PlayItemListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent arg0) {			
+			commandManager.executeCommandPlay();
+		}		
+	}
+	
+	class ResetItemListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if((arg0.getActionCommand()).equals("disable")){
+				playButton.setEnabled(false);
+				resetButton.setEnabled(false);
+				stopButton.setEnabled(false);
+			}
+			commandManager.executeCommandReset();
+		}		
+	}
 	class KeyboardListener extends KeyAdapter {	
 		
 		@Override
@@ -306,19 +345,25 @@ public class EditorUI extends JFrame implements IEditorView
 				caretStart = caretStop;
 				caretStop = back;
 			}
+								
 			caretPosToSet = caretStop;
 			
 			if(e.isControlDown()) {
 				if(e.getKeyCode() == KeyEvent.VK_C) {			
 					commandManager.executeCommandCopy(caretStart, caretStop);
-				} else if(e.getKeyCode() == KeyEvent.VK_V) {			
+				} else if(e.getKeyCode() == KeyEvent.VK_V) {
 					commandManager.executeCommandPaste(caretStart, caretStop);
 				} else if(e.getKeyCode() == KeyEvent.VK_X) {
+					caretPosToSet = caretStart;
 					commandManager.executeCommandCut(caretStart, caretStop);
+				} else if(e.getKeyCode() == KeyEvent.VK_Z) {			
+					commandManager.undo();
+				} else if(e.getKeyCode() == KeyEvent.VK_Y) {
+					commandManager.redo();
 				}
 			}
 			
-			if (!e.isControlDown()) {
+			if (!e.isControlDown()) {		
 				if(temp == 8 && caretStop != 0) {
 					if(caretStart == caretStop){
 						caretPosToSet = caretStart - 1;

@@ -8,30 +8,20 @@ import rEdditooooooor.Model.TextConcrete;
 
 public class CommandPaste extends CommandUndoable implements IEditorCommand 
 {
-	private TextConcrete text;
-	private CommandManager cM;
-	
 	private int start;
 	private int end;
 
    /**
     * Constructor
-    * @param int aStart selection start
-    * @param int aEnd selection end
     */
-   public CommandPaste(int aStart, int aEnd) 
-   {
-	   this.text = TextConcrete.getInstance();
-	   this.cM = CommandManager.getInstance();	
-
-	   this.start = aStart;
-	   this.end = aEnd;
+   public CommandPaste() 
+   {	  
    }
    
    public void execute() 
    {
-	   this.text.paste(start, end); 
-	   this.cM.setCommandUndo(this);
+	   TextConcrete text = TextConcrete.getInstance();
+	   text.paste(this.start, this.end);
    }
    
    public void setCarets(int aStart, int aEnd){

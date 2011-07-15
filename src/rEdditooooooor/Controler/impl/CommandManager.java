@@ -3,7 +3,7 @@ package rEdditooooooor.Controler.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import rEdditooooooor.Controler.IEditorCommand;
+import rEdditooooooor.Model.TextConcrete;
 
 /**
  * Class created to manage the commands for undo/redo purpose
@@ -11,8 +11,10 @@ import rEdditooooooor.Controler.IEditorCommand;
 public final class CommandManager {
 
 	private static final CommandManager INSTANCECM = new CommandManager();
-	private List<IEditorCommand> commandsUndo;
-	private List<IEditorCommand> commandsRedo;
+	private List<CommandUndoable> commandsUndo;
+	private List<CommandUndoable> commandsRedo;
+	private List<CommandUndoable> recordings;
+	private boolean recordMode;
 	
 	private CommandCopy commandCopy;
 	private CommandCut commandCut;
@@ -21,26 +23,30 @@ public final class CommandManager {
 	private CommandDeleteAfter commandDeleteAfter;
 	private CommandInsert commandInsert;
 	private CommandNew commandNew;
+	private CommandPlay commandPlay;
 	
 	/**
 	 * Default constructor
 	 */
 	private CommandManager() {
-		commandsUndo = new ArrayList<IEditorCommand>();
-		commandsRedo = new ArrayList<IEditorCommand>();
+		commandsUndo = new ArrayList<CommandUndoable>();
+		commandsRedo = new ArrayList<CommandUndoable>();
+		recordings = new ArrayList<CommandUndoable>();
+		recordMode = false;
 		
-		commandCopy = new CommandCopy(0, 0);
-		commandCut = new CommandCut(0, 0);
-		commandPaste = new CommandPaste(0, 0);
-		commandDelete = new CommandDelete(0, 0);
-		commandDeleteAfter = new CommandDeleteAfter(0, 0);
-		commandInsert = new CommandInsert(0, 0, ' ');
+		commandCopy = new CommandCopy();
+		commandCut = new CommandCut();
+		commandPaste = new CommandPaste();
+		commandDelete = new CommandDelete();
+		commandDeleteAfter = new CommandDeleteAfter();
+		commandInsert = new CommandInsert();
 		commandNew = new CommandNew();
+		commandPlay = new CommandPlay();
 	}
 		
 	
 	public void executeCommandNew(){
-		commandNew.execute();		
+		commandNew.execute();	
 	}
 	
 	public void executeCommandCopy(int start, int end) {
@@ -48,76 +54,109 @@ public final class CommandManager {
 		commandCopy.execute();		
 	}
 	
-	public void executeCommandCut(int start, int end) {
+	public void executeCommandCut(int start, int end) {	
+		addMementoUndo();	
 		commandCut.setCarets(start, end);
-		commandCut.execute();		
+		commandCut.execute();	
 	}
 	
-	public void executeCommandPaste(int start, int end) {
+	public void executeCommandPaste(int start, int end) {	
+		addMementoUndo();	
 		commandPaste.setCarets(start, end);
-		commandPaste.execute();		
+		commandPaste.execute();	
 	}
 	
-	public void executeCommandDelete(int start, int end) {
+	public void executeCommandDelete(int start, int end) {	
+		addMementoUndo();	
 		commandDelete.setCarets(start, end);
-		commandDelete.execute();		
+		commandDelete.execute();	
 	}
 	
-	public void executeCommandDeleteAfter(int start, int end) {
+	public void executeCommandDeleteAfter(int start, int end) {	
+		addMementoUndo();	
 		commandDeleteAfter.setCarets(start, end);
 		commandDeleteAfter.execute();		
 	}
 	
-	public void executeCommandInsert(int start, int end, char character) {
+	public void executeCommandInsert(int start, int end, char character) {	
+		addMementoUndo();	
 		commandInsert.setCarets(start, end);
 		commandInsert.setChar(character);
-		commandInsert.execute();		
+		commandInsert.execute();	
 	}
 	
-	/**
-	 * Save an undoable command for undo purpose
-	 * @param command an undoable command
-	 */
-	public void setCommandUndo(IEditorCommand command){
-		this.commandsUndo.add(0, command);
+	public void executeCommandStart() {
+		TextConcrete text = TextConcrete.getInstance();
+		if(recordings.size() > 0){
+			recordings.clear();
+		}
+		recordings.add(text.createMemento());
+		recordMode = true;
 	}
 	
-	public List<IEditorCommand> getCommandsUndo() {
-		return commandsUndo;
+	public void executeCommandStop() {		
+		recordMode = false;
 	}
 	
-	public List<IEditorCommand> getCommandsRedo() {
-		return commandsRedo;
+	public void executeCommandPlay() {
+		TextConcrete text = TextConcrete.getInstance();
+		recordings.add(text.createMemento());
+		commandPlay.setRecord(recordings);
+		commandPlay.execute();
 	}
 	
+	public void executeCommandReset() {
+		recordings.clear();
+	}
+
+	public void addMementoUndo() 
+	{
+		TextConcrete text = TextConcrete.getInstance();
+		this.commandsUndo.add(0, text.createMemento());
+		if(recordMode){
+			this.recordings.add(text.createMemento());
+		}
+	}
+	
+	public void addMementoRedo() 
+	{
+		TextConcrete text = TextConcrete.getInstance();
+		this.commandsRedo.add(0, text.createMemento());
+		if(recordMode){
+			this.recordings.add(text.createMemento());
+		}
+	}
+ 	
 	/**
 	 * Undo the last undoable command executed.
 	 */
 	public void undo() {
-		if(this.commandsUndo.size() > 0){
-			CommandUndoable command = (CommandUndoable) this.commandsUndo.get(0);
-			command.undo();
+		if(commandsUndo.size() != 0){
+			CommandUndoable tmp = this.commandsUndo.get(0);
 			this.commandsUndo.remove(0);
+			addMementoRedo();
+			TextConcrete text = TextConcrete.getInstance();
+			text.restoreMemento(tmp);
 		}
-	}
-	
-	/**
-	 * Save a redoable command for redo purpose
-	 * @param command an undoable command
-	 */
-	public void setCommandRedo(IEditorCommand command){
-		this.commandsRedo.add(0, command);
 	}
 	
 	/**
 	 * Redo the last redoable command executed.
 	 */
 	public void redo() {
-		if(this.commandsRedo.size() > 0){
-			CommandUndoable command = (CommandUndoable) this.commandsRedo.get(0);
-			command.redo();
+		if(commandsRedo.size() > 0) {
+			CommandUndoable tmp = this.commandsRedo.get(0);
 			this.commandsRedo.remove(0);
+			addMementoUndo();
+			TextConcrete text = TextConcrete.getInstance();
+			text.restoreMemento(tmp);
 		}
+	}
+	
+	public void clearAll(){
+		this.commandsRedo.clear();
+		this.commandsUndo.clear();
+		this.recordings.clear();
 	}
 	
 	/**

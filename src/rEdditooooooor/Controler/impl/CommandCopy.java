@@ -8,25 +8,19 @@ import rEdditooooooor.Model.TextConcrete;
 
 public class CommandCopy implements IEditorCommand 
 {
-	private TextConcrete text;
-	
 	private int start = 0;
 	private int end = 0;
 
    /**
     * Constructor
-    * @param int aStart selection start
-    * @param int aEnd selection end
     */
-   public CommandCopy(int aStart, int aEnd) 
+   public CommandCopy() 
    {
-	   this.text = TextConcrete.getInstance();
-	   this.start = aStart;
-	   this.end = aEnd;
    }
    
    public void execute() 
    {
+	   TextConcrete text = TextConcrete.getInstance();
 	   text.copy(this.start, this.end);
    }
    

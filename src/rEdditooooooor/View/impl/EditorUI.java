@@ -101,15 +101,21 @@ public class EditorUI extends JFrame implements IEditorView
 				
 		startItem = new JMenuItem("Start");
 		startItem.addActionListener(new StartItemListener());
+		startItem.setActionCommand("enable");
 		menuMacro.add(startItem);
 		stopItem = new JMenuItem("Stop");
 		stopItem.addActionListener(new StopItemListener());
+		stopItem.setActionCommand("enable");
+		stopItem.setEnabled(false);
 		menuMacro.add(stopItem);
 		resetItem = new JMenuItem("Reset");
 		resetItem.addActionListener(new RedoItemListener());
+		resetItem.setEnabled(false);
+		resetItem.setActionCommand("disable");
 		menuMacro.add(resetItem).add(new JSeparator());
 		playItem = new JMenuItem("Play");
 		playItem.addActionListener(new PlayItemListener());
+		playItem.setEnabled(false);
 		menuMacro.add(playItem).add(new JSeparator());
 		
 		JMenu menuAbout= new JMenu("?");
@@ -297,6 +303,7 @@ public class EditorUI extends JFrame implements IEditorView
 		public void actionPerformed(ActionEvent arg0) {
 			if((arg0.getActionCommand()).equals("enable")){
 				stopButton.setEnabled(true);
+				stopItem.setEnabled(true);
 			}
 			commandManager.executeCommandStart();
 		}		
@@ -307,7 +314,9 @@ public class EditorUI extends JFrame implements IEditorView
 		public void actionPerformed(ActionEvent arg0) {
 			if((arg0.getActionCommand()).equals("enable")){
 				playButton.setEnabled(true);
+				playItem.setEnabled(true);
 				resetButton.setEnabled(true);
+				resetItem.setEnabled(true);
 			}
 			commandManager.executeCommandStop();
 		}		
@@ -327,6 +336,10 @@ public class EditorUI extends JFrame implements IEditorView
 				playButton.setEnabled(false);
 				resetButton.setEnabled(false);
 				stopButton.setEnabled(false);
+				playItem.setEnabled(false);
+				resetItem.setEnabled(false);
+				stopItem.setEnabled(false);
+				
 			}
 			commandManager.executeCommandReset();
 		}		

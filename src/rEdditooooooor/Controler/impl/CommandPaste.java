@@ -10,6 +10,7 @@ public class CommandPaste extends CommandUndoable implements IEditorCommand
 {
 	private int start;
 	private int end;
+	private TextConcrete text;
 
    /**
     * Constructor
@@ -20,12 +21,39 @@ public class CommandPaste extends CommandUndoable implements IEditorCommand
    
    public void execute() 
    {
-	   TextConcrete text = TextConcrete.getInstance();
-	   text.paste(this.start, this.end);
+	   this.end = text.paste(this.start);
    }
+
+   @Override
+	public void executeFrom(int aStart, int aEnd) {
+	   this.end = text.paste(this.start + aStart);
+	}
+   
+   @Override
+   public void unexecute() {
+	   	text.cut(start, start + end);
+   }
+   
+   @Override
+	public int getStart() {
+		return this.start;
+	}
+   
    
    public void setCarets(int aStart, int aEnd){
 	   this.start = aStart;
 	   this.end = aEnd;
    }
+   
+   public void setText(TextConcrete aText) {
+	   this.text = aText;
+   }
+
+	@Override
+	public CommandUndoable getClone() {
+		CommandPaste com = new CommandPaste();
+		com.setCarets(start, end);
+		com.setText(text);
+		return com;
+	}
 }

@@ -7,21 +7,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import rEdditooooooor.Controler.impl.CommandDelete;
+import rEdditooooooor.Controler.impl.CommandInsert;
+import rEdditooooooor.Controler.impl.CommandManager;
 import rEdditooooooor.Controler.impl.CommandUndoable;
 
 public final class TextConcrete extends Text 
 {
-
-   private static final TextConcrete INSTANCETX = new TextConcrete();
-	
    private List<Character> state;
    
    private ClipBoard clipboard;
- 
+    
    /**
     * Default Constructor
     */
-   private TextConcrete() 
+   public TextConcrete() 
    {
 	   this.state = Collections.synchronizedList(new ArrayList<Character>());
 	   this.clipboard = new ClipBoard();
@@ -34,26 +34,26 @@ public final class TextConcrete extends Text
     * 			from start to end gonna have to be deleted
     * @param character the character to be inserted
     */  
-   public void insert(int start, int end, char character)
+   public void insert(int start, char character)
    {	
 	   synchronized (state) {		   
 		   if(start > this.state.size()){
 			   start = this.state.size();
-			   end = this.state.size();
+			   //end = this.state.size();
 		   }
-		   if(start != end) {		
-			   int len = end - start;
-			   for(int idx = start; idx < start + len; idx++){
-				   this.state.remove(start);
-			   }	
-		   }		   
+//		   if(start != end) {		
+//			   int len = end - start;
+//			   for(int idx = start; idx < start + len; idx++){
+//				   this.state.remove(start);
+//			   }	
+//		   }		   
 		   if((this.state.size() == 0) || (start == this.state.size())){
 			   this.state.add(character);
 		   } else {	
 			   this.state.add(start, character);
 		   }
 	   } 	   
-	   this.notifyObservers();	   
+	   this.notifyObservers();	
    }
    
    /**
@@ -103,28 +103,30 @@ public final class TextConcrete extends Text
     * @param end if different from start, a selection 
     * 			from start to end gonna have to be deleted
     */
-   public void paste(int start, int end)
+   public int paste(int start)
    {
 	   String toAdd = this.clipboard.getSelection();	   
 	   if(toAdd.length() > 0 && toAdd != null){
-		   if(start != end){
-			   if(start > end){
-				   int back = end;
-				   end = start;
-				   start = back;		   
-			   }
-			   int len = end - start;
-			   for(int idx = start; idx < start + len; idx++){
-				   this.state.remove(start);
-			   }
-		   }
+//		   if(start != end){
+//			   if(start > end){
+//				   int back = end;
+//				   end = start;
+//				   start = back;		   
+//			   }
+//			   int len = end - start;
+//			   for(int idx = start; idx < start + len; idx++){
+//				   this.state.remove(start);
+//			   }
+//		   }
 		   int idxString = 0;
 		   for(int idx = start; idx < start + toAdd.length(); idx++){
 			   this.state.add(start + idxString, toAdd.charAt(idxString));
 			   idxString++;
-		   }	   
+		   }
 		   this.notifyObservers();
+		   return idxString;
 	   }
+	   return 0;
    }
    
    /**
@@ -133,19 +135,21 @@ public final class TextConcrete extends Text
     * @param end if different from start, a selection 
     * 			from start to end gonna have to be deleted
     */
-   public void delete(int start, int end)
+   public char delete(int start)
    {
-	   if(start >= 0){
-		   if(start == end){
-			   this.state.remove(start - 1);
-		   } else {			   
-			   int len = end - start;
-			   for(int idx = start; idx < start + len; idx++){
-				   this.state.remove(start);
-			   }
-		   }		   
-	   }
+//	   if(start >= 0){
+//		   if(start == end){
+//			   this.state.remove(start - 1);
+//		   } else {			   
+//			   int len = end - start;
+//			   for(int idx = start; idx < start + len; idx++){
+//				   this.state.remove(start);
+//			   }
+//		   }		   
+//	   }
+	   char temp = this.state.remove(start - 1);
 	   this.notifyObservers();
+	   return temp;
    }
    
    /**
@@ -154,41 +158,19 @@ public final class TextConcrete extends Text
     * @param end if different from start, a selection 
     * 			from start to end gonna have to be deleted
     */
-   public void deleteAfter(int start, int end)
+   public char deleteAfter(int start)
    {
-	   if(start == end){
-			   this.state.remove(start);
-	   } else {		   
-		   int len = end - start;
-		   for(int idx = start; idx < start + len; idx++){
-			   this.state.remove(start);
-		   }  
-		}		   
-	   
+//	   if(start == end){
+//			   this.state.remove(start);
+//	   } else {		   
+//		   int len = end - start;
+//		   for(int idx = start; idx < start + len; idx++){
+//			   this.state.remove(start);
+//		   }  
+//		}	
+	   char temp = this.state.remove(start);	   
 	   this.notifyObservers();
-   }
-   
-   public void playRecordings(final List<CommandUndoable> recordings) {
-	   Thread thread = new Thread(new Runnable() {		
-			@Override
-			public void run() {
-				for(int idx = 0; idx < recordings.size(); idx++){	
-					state.clear();
-					String tmp = recordings.get(idx).getState();
-					for(int idx2 = 0; idx2 < tmp.length(); idx2++){
-						state.add(tmp.charAt(idx2));			   
-					}
-					notifyObservers();
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException interruptedException) {
-						interruptedException.printStackTrace();
-					}
-				}	  
-			}
-	   });
-	   thread.start();
-	    
+	   return temp;
    }
    
    /**
@@ -226,22 +208,16 @@ public final class TextConcrete extends Text
 	   this.notifyObservers();
    }
    
-   public CommandUndoable createMemento() 
-   {
-	   CommandUndoable mem = new CommandUndoable();
-	   mem.setState(getState());
-	   return mem;
-   }
-   
-   public void restoreMemento(CommandUndoable com) 
-   {
-	   setState(com.getState());
-   }
-   
-   /** 
-    * @return the unique instance of TextConcrete
-    */
-   public static synchronized TextConcrete getInstance(){
-	   return INSTANCETX;
-   }
+//   public CommandUndoable createMemento() 
+//   {
+//	   CommandUndoable mem = new CommandUndoable();
+//	   mem.setState(getState());
+//	   return mem;
+//   }
+//   
+//   public void restoreMemento(CommandUndoable com) 
+//   {
+//	   setState(com.getState());
+//   }
+//  
 }

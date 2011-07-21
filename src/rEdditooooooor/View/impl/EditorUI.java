@@ -28,6 +28,9 @@ import javax.swing.JToolBar;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
+import rEdditooooooor.Controler.IEditorCommand;
+import rEdditooooooor.Controler.impl.CommandManager;
+import rEdditooooooor.Model.TextConcrete;
 import rEdditooooooor.View.IEditorView;
 
 /**
@@ -36,6 +39,9 @@ import rEdditooooooor.View.IEditorView;
 public class EditorUI extends JFrame implements IEditorView
 {
 	private static final long serialVersionUID = 1L;
+	
+	private final TextConcrete subject;
+	private CommandManager commandManager = CommandManager.getInstance();
 	
 	private int frameWitdh = 680;
 	private int frameHeight = 480;
@@ -51,11 +57,30 @@ public class EditorUI extends JFrame implements IEditorView
 	
 	private JButton startButton, stopButton, playButton, resetButton;
 	private JMenuItem startItem, stopItem, playItem, resetItem; 
-        /**
-         * Default Constructor
-         */
-	public EditorUI() {
+	
+	private IEditorCommand commandCopy;
+	private IEditorCommand commandCut;
+	private IEditorCommand commandPaste;
+	private IEditorCommand commandDelete;
+	private IEditorCommand commandDeleteAfter;
+	private IEditorCommand commandInsert;
+	private IEditorCommand commandNew;
+	private IEditorCommand commandPlay;
+	
+    /**
+     * Default Constructor
+     */
+	public EditorUI(TextConcrete text, IEditorCommand aCommandCopy, IEditorCommand aCommandCut, IEditorCommand aCommandPaste, IEditorCommand aCommandDelete, IEditorCommand aCommandDeleteAfter, IEditorCommand aCommandInsert, IEditorCommand aCommandNew, IEditorCommand aCommandPlay) {
+		this.commandCopy = aCommandCopy;
+		this.commandCut = aCommandCut;
+		this.commandDelete = aCommandDelete;
+		this.commandDeleteAfter = aCommandDeleteAfter;
+		this.commandInsert = aCommandInsert;
+		this.commandNew = aCommandNew;
+		this.commandPaste = aCommandPaste;
+		this.commandPlay = aCommandPlay;
 		
+		subject = text;
 		initializeWindow();
 		subject.attach(this);
 		this.setVisible(true);
@@ -252,7 +277,7 @@ public class EditorUI extends JFrame implements IEditorView
 		public void actionPerformed(ActionEvent e) {
 			int temp = JOptionPane.showConfirmDialog(rootPane, "You will lose every data, are you sure?", "New Document", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(temp == JOptionPane.YES_OPTION){
-				commandManager.executeCommandNew();
+				commandManager.executeCommand(subject, commandNew);
 			}
 		}
 		
@@ -262,7 +287,8 @@ public class EditorUI extends JFrame implements IEditorView
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			caretPosToSet = caretStop;
-			commandManager.executeCommandCut(caretStart, caretStop);			
+			commandManager.setCarets(caretStart, caretStop);
+			commandManager.executeCommand(subject, commandCut);			
 		}		
 	}
 	
@@ -270,7 +296,8 @@ public class EditorUI extends JFrame implements IEditorView
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			caretPosToSet = caretStop;
-			commandManager.executeCommandCopy(caretStart, caretStop);		
+			commandManager.setCarets(caretStart, caretStop);
+			commandManager.executeCommand(subject, commandCopy);		
 		}		
 	}
 	
@@ -278,7 +305,8 @@ public class EditorUI extends JFrame implements IEditorView
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			caretPosToSet = caretStop;
-			commandManager.executeCommandPaste(caretStart, caretStop);			
+			commandManager.setCarets(caretStart, caretStop);
+			commandManager.executeCommand(subject, commandPaste);			
 		}		
 	}
 	
@@ -324,8 +352,8 @@ public class EditorUI extends JFrame implements IEditorView
 	
 	class PlayItemListener implements ActionListener{
 		@Override
-		public void actionPerformed(ActionEvent arg0) {			
-			commandManager.executeCommandPlay();
+		public void actionPerformed(ActionEvent arg0) {		
+			commandManager.executeCommandPlay(caretStart, caretStop);
 		}		
 	}
 	
@@ -362,13 +390,16 @@ public class EditorUI extends JFrame implements IEditorView
 			caretPosToSet = caretStop;
 			
 			if(e.isControlDown()) {
-				if(e.getKeyCode() == KeyEvent.VK_C) {			
-					commandManager.executeCommandCopy(caretStart, caretStop);
+				if(e.getKeyCode() == KeyEvent.VK_C) {	
+					commandManager.setCarets(caretStart, caretStop);		
+					commandManager.executeCommand(subject, commandCopy);
 				} else if(e.getKeyCode() == KeyEvent.VK_V) {
-					commandManager.executeCommandPaste(caretStart, caretStop);
+					commandManager.setCarets(caretStart, caretStop);
+					commandManager.executeCommand(subject, commandPaste);
 				} else if(e.getKeyCode() == KeyEvent.VK_X) {
 					caretPosToSet = caretStart;
-					commandManager.executeCommandCut(caretStart, caretStop);
+					commandManager.setCarets(caretStart, caretStop);
+					commandManager.executeCommand(subject, commandCut);
 				} else if(e.getKeyCode() == KeyEvent.VK_Z) {			
 					commandManager.undo();
 				} else if(e.getKeyCode() == KeyEvent.VK_Y) {
@@ -383,13 +414,17 @@ public class EditorUI extends JFrame implements IEditorView
 					} else {
 						caretPosToSet = caretStart;
 					}
-					commandManager.executeCommandDelete(caretStart, caretStop);
+					commandManager.setCarets(caretStart, caretStop);
+					commandManager.executeCommand(subject, commandDelete);
 				} else if(temp == 127 && caretStop != textArea.getText().length() + 1){
 					caretPosToSet = caretStart;		
-					commandManager.executeCommandDeleteAfter(caretStart, caretStop);
+					commandManager.setCarets(caretStart, caretStop);
+					commandManager.executeCommand(subject, commandDeleteAfter);
 				} else if((temp == 10) || (temp > 31 && temp < 37) || (temp > 40 && temp < 127) ) {
 					caretPosToSet = caretStart + 1;
-					commandManager.executeCommandInsert(caretStart, caretStop, e.getKeyChar());
+					commandManager.setCarets(caretStart, caretStop);
+					commandManager.setCharacter(e.getKeyChar());
+					commandManager.executeCommand(subject, commandInsert);
 				} else {
 					caretPosToSet = caretStart;
 				}

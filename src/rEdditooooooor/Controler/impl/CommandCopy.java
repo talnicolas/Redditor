@@ -8,8 +8,9 @@ import rEdditooooooor.Model.TextConcrete;
 
 public class CommandCopy implements IEditorCommand 
 {
-	private int start = 0;
-	private int end = 0;
+	private int start;
+	private int end;
+	private TextConcrete text;
 
    /**
     * Constructor
@@ -20,12 +21,15 @@ public class CommandCopy implements IEditorCommand
    
    public void execute() 
    {
-	   TextConcrete text = TextConcrete.getInstance();
-	   text.copy(this.start, this.end);
+	   this.text.copy(this.start, this.end);
    }
    
    public void setCarets(int aStart, int aEnd){
 	   this.start = aStart;
 	   this.end = aEnd;
    }
+   
+   public void setText(TextConcrete aText){
+	   this.text = aText;
+   }   
 }

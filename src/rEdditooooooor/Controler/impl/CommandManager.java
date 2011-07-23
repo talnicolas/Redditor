@@ -33,6 +33,13 @@ public final class CommandManager {
 		recordMode = false;
 	}
 		
+	/**
+	 * Execute the command received by the UI on a specified text. If the recording mode is
+	 * on, save the command in the recordings buffer.
+	 * @param text text on which the command has to be executed
+	 * @param command the command to be executed
+	 * @return true if the command executed correctly
+	 */
 	public boolean executeCommand(TextConcrete text, IEditorCommand command){
 		if(command instanceof CommandUndoable) { 
 			((CommandUndoable) command).setCarets(start, end);
@@ -46,7 +53,7 @@ public final class CommandManager {
 
 				if(recordMode){
 					recordings.add(temp);
-			}
+				}
 				return true;
 			} else {
 				return false;
@@ -60,6 +67,9 @@ public final class CommandManager {
 		}
 	}
 	
+	/**
+	 * Start the recording. Clear the buffer if it isn't empty
+	 */
 	public void executeCommandStart() {
 		if(recordings.size() > 0){
 			recordings.clear();
@@ -68,14 +78,28 @@ public final class CommandManager {
 		recordMode = true;
 	}
 	
+	/**
+	 * Stop the recording
+	 */
 	public void executeCommandStop() {		
 		recordMode = false;
 	}
 	
+	/**
+	 * Reset the recordings buffer
+	 */
 	public void executeCommandReset() {
 		recordings.clear();
 	}
 	
+	/**
+	 * The command play executes all the commands that has been executed by the user since he
+	 * started the recording, in order. If a non replayable action has been recorded, an error
+	 * box will be displayed to the user.
+	 * @param start position from which the replay starts
+	 * @param end position where the replay ends
+	 * @return true if the replay executed successfully
+	 */
 	public boolean executeCommandPlay(final int start, final int end) {	
 		replayable = true;		
 		int idx = 0;
@@ -95,15 +119,21 @@ public final class CommandManager {
 	* Save an undoable command for undo purpose
 	* @param command an undoable command
 	*/
-
 	public void setCommandUndo(CommandUndoable command){
 		this.commandsUndo.add(0, command);
 	}
 		
+	/**
+	* Save an undoable command for redo purpose
+	* @param command an undoable command
+	*/
 	public void setCommandRedo(CommandUndoable command){
 		this.commandsRedo.add(0, command);
 	}
 	
+	/**
+	 * Call the method unexecute of the command so this command can be reverted
+	 */
 	public void undo() {
 		if(this.commandsUndo.size() > 0){
 			CommandUndoable command = this.commandsUndo.get(0);			
@@ -113,6 +143,9 @@ public final class CommandManager {
 		}
 	}
 	
+	/**
+	 * Reexecute a command that has been previously undone
+	 */
 	public void redo() {
 		if(this.commandsRedo.size() > 0){
 			CommandUndoable command = this.commandsRedo.get(0);			
@@ -136,6 +169,9 @@ public final class CommandManager {
 		this.character = aCharacter;
 	}
 	
+	/**
+	 * Reset all the buffers (for the New command)
+	 */
 	public void clearAll(){
 		this.commandsRedo.clear();
 		this.commandsUndo.clear();

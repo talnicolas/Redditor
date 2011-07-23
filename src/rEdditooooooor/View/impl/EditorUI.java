@@ -66,7 +66,7 @@ public class EditorUI extends JFrame implements IEditorView
 	private IEditorCommand commandNew;
 	
     /**
-     * Default Constructor
+     * Constructor
      */
 	public EditorUI(TextConcrete text, CommandManager cM, IEditorCommand aCommandCopy, IEditorCommand aCommandCut, IEditorCommand aCommandPaste, IEditorCommand aCommandDelete, IEditorCommand aCommandInsert, IEditorCommand aCommandNew) {
 		this.commandCopy = aCommandCopy;
@@ -77,8 +77,10 @@ public class EditorUI extends JFrame implements IEditorView
 		this.commandPaste = aCommandPaste;
 		
 		this.commandManager = cM;
-		subject = text;
+		this.subject = text;
+		
 		initializeWindow();
+		
 		subject.attach(this);
 		this.setVisible(true);
 	}
@@ -467,6 +469,10 @@ public class EditorUI extends JFrame implements IEditorView
 		}
 	}
 	
+	/**
+	 * If the caret start is not the same as the caret stop, it means that the selection
+	 * has to be deleted before the command is executed.
+	 */
 	public void deleteBeforeCommand(){
 		if(caretStop < caretStart){
 			int back = caretStop;

@@ -25,8 +25,6 @@ public final class TextConcrete extends Text
    /**
     * Insert a character into the state of the model.
     * @param start the index where the insertion starts
-    * @param end if different from start, a selection 
-    * 			from start to end gonna have to be deleted
     * @param character the character to be inserted
     */  
    public boolean insert(int start, char character)
@@ -94,8 +92,6 @@ public final class TextConcrete extends Text
    /**
     * Insert the previously saved selection (from copy or cut) at the specified index.
     * @param start the index where the insertion starts
-    * @param end if different from start, a selection 
-    * 			from start to end gonna have to be deleted
     */
    public int paste(int start)
    {
@@ -115,8 +111,6 @@ public final class TextConcrete extends Text
    /**
     * Delete the previous character in the state
     * @param start the index where the deletion starts (will delete start - 1)
-    * @param end if different from start, a selection 
-    * 			from start to end gonna have to be deleted
     */
    public char delete(int start) {
 	   char temp = '\u0000';
@@ -135,8 +129,6 @@ public final class TextConcrete extends Text
    /**
     * Delete the following character in the state
     * @param start the index where the deletion starts (will delete start)
-    * @param end if different from start, a selection 
-    * 			from start to end gonna have to be deleted
     */
    public char deleteAfter(int start)
    {
@@ -156,6 +148,9 @@ public final class TextConcrete extends Text
 	   
    }
    
+   /**
+    * Delete the clipboard value when the copy is undone
+    */
    public void clearClipBoard(){
 	   this.clipboard.save("");
    }
@@ -181,17 +176,5 @@ public final class TextConcrete extends Text
 	   }	
 	   return temp.toString();
    }
-   
-   /**
-    * Set the state of the model
-    * @param aState a new state
-    */
-   public void setState(String aState) 
-   {    
-	   this.state.clear();
-	   for(int idx = 0; idx < aState.length(); idx++){
-		   this.state.add(aState.charAt(idx));
-	   }
-	   this.notifyObservers();
-   }
+
 }

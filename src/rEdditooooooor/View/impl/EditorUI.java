@@ -41,7 +41,7 @@ public class EditorUI extends JFrame implements IEditorView
 	private static final long serialVersionUID = 1L;
 	
 	private final TextConcrete subject;
-	private CommandManager commandManager = CommandManager.getInstance();
+	private CommandManager commandManager;
 	
 	private int frameWitdh = 680;
 	private int frameHeight = 480;
@@ -62,24 +62,21 @@ public class EditorUI extends JFrame implements IEditorView
 	private IEditorCommand commandCut;
 	private IEditorCommand commandPaste;
 	private IEditorCommand commandDelete;
-	private IEditorCommand commandDeleteAfter;
 	private IEditorCommand commandInsert;
 	private IEditorCommand commandNew;
-	private IEditorCommand commandPlay;
 	
     /**
      * Default Constructor
      */
-	public EditorUI(TextConcrete text, IEditorCommand aCommandCopy, IEditorCommand aCommandCut, IEditorCommand aCommandPaste, IEditorCommand aCommandDelete, IEditorCommand aCommandDeleteAfter, IEditorCommand aCommandInsert, IEditorCommand aCommandNew, IEditorCommand aCommandPlay) {
+	public EditorUI(TextConcrete text, CommandManager cM, IEditorCommand aCommandCopy, IEditorCommand aCommandCut, IEditorCommand aCommandPaste, IEditorCommand aCommandDelete, IEditorCommand aCommandInsert, IEditorCommand aCommandNew) {
 		this.commandCopy = aCommandCopy;
 		this.commandCut = aCommandCut;
 		this.commandDelete = aCommandDelete;
-		this.commandDeleteAfter = aCommandDeleteAfter;
 		this.commandInsert = aCommandInsert;
 		this.commandNew = aCommandNew;
 		this.commandPaste = aCommandPaste;
-		this.commandPlay = aCommandPlay;
 		
+		this.commandManager = cM;
 		subject = text;
 		initializeWindow();
 		subject.attach(this);
@@ -134,7 +131,7 @@ public class EditorUI extends JFrame implements IEditorView
 		stopItem.setEnabled(false);
 		menuMacro.add(stopItem);
 		resetItem = new JMenuItem("Reset");
-		resetItem.addActionListener(new RedoItemListener());
+		resetItem.addActionListener(new ResetItemListener());
 		resetItem.setEnabled(false);
 		resetItem.setActionCommand("disable");
 		menuMacro.add(resetItem).add(new JSeparator());
@@ -278,6 +275,12 @@ public class EditorUI extends JFrame implements IEditorView
 			int temp = JOptionPane.showConfirmDialog(rootPane, "You will lose every data, are you sure?", "New Document", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if(temp == JOptionPane.YES_OPTION){
 				commandManager.executeCommand(subject, commandNew);
+				playButton.setEnabled(false);
+				playItem.setEnabled(false);
+				resetButton.setEnabled(false);
+				resetItem.setEnabled(false);
+				stopButton.setEnabled(false);
+				stopItem.setEnabled(false);
 			}
 		}
 		
@@ -285,17 +288,15 @@ public class EditorUI extends JFrame implements IEditorView
 	
 	class CutItemListener implements ActionListener {
 		@Override
-		public void actionPerformed(ActionEvent e) {
-			caretPosToSet = caretStop;
+		public void actionPerformed(ActionEvent e) {				
 			commandManager.setCarets(caretStart, caretStop);
-			commandManager.executeCommand(subject, commandCut);			
+			commandManager.executeCommand(subject, commandCut);
 		}		
 	}
 	
 	class CopyItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			caretPosToSet = caretStop;
 			commandManager.setCarets(caretStart, caretStop);
 			commandManager.executeCommand(subject, commandCopy);		
 		}		
@@ -304,7 +305,9 @@ public class EditorUI extends JFrame implements IEditorView
 	class PasteItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			caretPosToSet = caretStop;
+			if(caretStop != caretStart){
+				deleteBeforeCommand();
+			}
 			commandManager.setCarets(caretStart, caretStop);
 			commandManager.executeCommand(subject, commandPaste);			
 		}		
@@ -313,7 +316,6 @@ public class EditorUI extends JFrame implements IEditorView
 	class UndoItemListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			caretPosToSet = 0;
 			commandManager.undo();
 		}		
 	}
@@ -321,7 +323,6 @@ public class EditorUI extends JFrame implements IEditorView
 	class RedoItemListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			caretPosToSet = 0;
 			commandManager.redo();
 		}		
 	}
@@ -333,6 +334,7 @@ public class EditorUI extends JFrame implements IEditorView
 				stopButton.setEnabled(true);
 				stopItem.setEnabled(true);
 			}
+			commandManager.setCarets(caretStart, caretStop);
 			commandManager.executeCommandStart();
 		}		
 	}
@@ -352,8 +354,19 @@ public class EditorUI extends JFrame implements IEditorView
 	
 	class PlayItemListener implements ActionListener{
 		@Override
-		public void actionPerformed(ActionEvent arg0) {		
-			commandManager.executeCommandPlay(caretStart, caretStop);
+		public void actionPerformed(ActionEvent arg0) {	
+			if(caretStop != caretStart){
+				deleteBeforeCommand();
+			}
+			if(!commandManager.executeCommandPlay(caretStart, caretStop)){
+				JOptionPane.showMessageDialog(rootPane, "Apparently, one of your recorded action is not replayable, sorry.", "Error", JOptionPane.INFORMATION_MESSAGE);
+				playButton.setEnabled(false);
+				playItem.setEnabled(false);
+				resetButton.setEnabled(false);
+				resetItem.setEnabled(false);
+				stopButton.setEnabled(false);
+				stopItem.setEnabled(false);
+			}
 		}		
 	}
 	
@@ -387,17 +400,19 @@ public class EditorUI extends JFrame implements IEditorView
 				caretStop = back;
 			}
 								
-			caretPosToSet = caretStop;
+			caretPosToSet = caretStart;
 			
 			if(e.isControlDown()) {
-				if(e.getKeyCode() == KeyEvent.VK_C) {	
+				if(e.getKeyCode() == KeyEvent.VK_C) {						
 					commandManager.setCarets(caretStart, caretStop);		
 					commandManager.executeCommand(subject, commandCopy);
 				} else if(e.getKeyCode() == KeyEvent.VK_V) {
+					if(caretStop != caretStart){
+						deleteBeforeCommand();
+					}
 					commandManager.setCarets(caretStart, caretStop);
 					commandManager.executeCommand(subject, commandPaste);
 				} else if(e.getKeyCode() == KeyEvent.VK_X) {
-					caretPosToSet = caretStart;
 					commandManager.setCarets(caretStart, caretStop);
 					commandManager.executeCommand(subject, commandCut);
 				} else if(e.getKeyCode() == KeyEvent.VK_Z) {			
@@ -411,22 +426,26 @@ public class EditorUI extends JFrame implements IEditorView
 				if(temp == 8 && caretStop != 0) {
 					if(caretStart == caretStop){
 						caretPosToSet = caretStart - 1;
-					} else {
-						caretPosToSet = caretStart;
-					}
-					commandManager.setCarets(caretStart, caretStop);
-					commandManager.executeCommand(subject, commandDelete);
+						commandManager.setCarets(caretStart, caretStop);
+						commandManager.executeCommand(subject, commandDelete);
+					} else if(caretStop != caretStart){
+						deleteBeforeCommand();
+					} 
 				} else if(temp == 127 && caretStop != textArea.getText().length() + 1){
-					caretPosToSet = caretStart;		
-					commandManager.setCarets(caretStart, caretStop);
-					commandManager.executeCommand(subject, commandDeleteAfter);
+					if(caretStop != caretStart){
+						deleteBeforeCommand();
+					} else {
+						commandManager.setCarets(caretStart + 1, caretStop + 1);
+						commandManager.executeCommand(subject, commandDelete);
+					}
 				} else if((temp == 10) || (temp > 31 && temp < 37) || (temp > 40 && temp < 127) ) {
+					if(caretStop != caretStart){
+						deleteBeforeCommand();
+					}
 					caretPosToSet = caretStart + 1;
 					commandManager.setCarets(caretStart, caretStop);
 					commandManager.setCharacter(e.getKeyChar());
 					commandManager.executeCommand(subject, commandInsert);
-				} else {
-					caretPosToSet = caretStart;
 				}
 			}
 		}					
@@ -446,5 +465,24 @@ public class EditorUI extends JFrame implements IEditorView
 				
 			}
 		}
+	}
+	
+	public void deleteBeforeCommand(){
+		if(caretStop < caretStart){
+			int back = caretStop;
+			caretStop = caretStart;
+			caretStart = back;
+		}
+		int idx;
+		int backup = caretStart;
+		int tempStart = caretStart;
+		int tempStop = caretStop;
+		int len = tempStop - tempStart;		
+		for(idx = 0; idx < len; idx++){
+			commandManager.setCarets(tempStart + 1, tempStop + 1);
+			commandManager.executeCommand(subject, commandDelete);
+		}
+		caretStart = backup;
+		caretStop = backup;
 	}
 }

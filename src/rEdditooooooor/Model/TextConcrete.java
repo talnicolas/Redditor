@@ -7,11 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import rEdditooooooor.Controler.impl.CommandDelete;
-import rEdditooooooor.Controler.impl.CommandInsert;
-import rEdditooooooor.Controler.impl.CommandManager;
-import rEdditooooooor.Controler.impl.CommandUndoable;
-
 public final class TextConcrete extends Text 
 {
    private List<Character> state;
@@ -34,26 +29,23 @@ public final class TextConcrete extends Text
     * 			from start to end gonna have to be deleted
     * @param character the character to be inserted
     */  
-   public void insert(int start, char character)
+   public boolean insert(int start, char character)
    {	
-	   synchronized (state) {		   
-		   if(start > this.state.size()){
-			   start = this.state.size();
-			   //end = this.state.size();
-		   }
-//		   if(start != end) {		
-//			   int len = end - start;
-//			   for(int idx = start; idx < start + len; idx++){
-//				   this.state.remove(start);
-//			   }	
-//		   }		   
+	   if(start > this.state.size()){
+		   start = this.state.size();
+	   }	
+	   try{
 		   if((this.state.size() == 0) || (start == this.state.size())){
 			   this.state.add(character);
 		   } else {	
 			   this.state.add(start, character);
 		   }
-	   } 	   
+	   } catch(IndexOutOfBoundsException exception){
+		   return false;
+	   }
+	   	   
 	   this.notifyObservers();	
+	   return true;
    }
    
    /**
@@ -61,18 +53,18 @@ public final class TextConcrete extends Text
     * @param start the index of the selection start
     * @param end the index of the selection end
     */
-   public void copy(int start, int end)
+   public boolean copy(int start, int end)
    {
-	   StringBuilder temp = new StringBuilder();
-	   if(end < start){
-		   int back = end;
-		   end = start;
-		   start = back;
-	   }
+	   StringBuilder temp = new StringBuilder();	   
 	   for(int idx = start; idx < end; idx++){
-		   temp.append(this.state.get(idx));
+		   try {
+			   temp.append(this.state.get(idx));
+		   } catch(IndexOutOfBoundsException exception) {
+			   return false;
+		   }
 	   }
 	   this.clipboard.save(temp.toString());
+	   return true;
    }
    
    /**
@@ -80,21 +72,23 @@ public final class TextConcrete extends Text
     * @param start the index of the selection start
     * @param end the index of the selection end
     */
-   public void cut(int start, int end)
+   public boolean cut(int start, int end)
    {
-	   copy(start, end);
-	   if(start != end){
-		   if(start > end){
-			   int back = end;
-			   end = start;
-			   start = back;		   
-		   }
+	   if(!copy(start, end)){
+		   return false;
+	   }
+	   if(start != end){		   
 		   int len = end - start;
 		   for(int idx = start; idx < start + len; idx++){
-			   this.state.remove(start);
+			   try{
+				   this.state.remove(start);
+			   } catch(IndexOutOfBoundsException exception) {
+				   return false;
+			   }
 		   }
 	   }
 	   this.notifyObservers();
+	   return true;
    }
    
    /**
@@ -107,17 +101,6 @@ public final class TextConcrete extends Text
    {
 	   String toAdd = this.clipboard.getSelection();	   
 	   if(toAdd.length() > 0 && toAdd != null){
-//		   if(start != end){
-//			   if(start > end){
-//				   int back = end;
-//				   end = start;
-//				   start = back;		   
-//			   }
-//			   int len = end - start;
-//			   for(int idx = start; idx < start + len; idx++){
-//				   this.state.remove(start);
-//			   }
-//		   }
 		   int idxString = 0;
 		   for(int idx = start; idx < start + toAdd.length(); idx++){
 			   this.state.add(start + idxString, toAdd.charAt(idxString));
@@ -126,7 +109,7 @@ public final class TextConcrete extends Text
 		   this.notifyObservers();
 		   return idxString;
 	   }
-	   return 0;
+	   return -1;
    }
    
    /**
@@ -135,20 +118,17 @@ public final class TextConcrete extends Text
     * @param end if different from start, a selection 
     * 			from start to end gonna have to be deleted
     */
-   public char delete(int start)
-   {
-//	   if(start >= 0){
-//		   if(start == end){
-//			   this.state.remove(start - 1);
-//		   } else {			   
-//			   int len = end - start;
-//			   for(int idx = start; idx < start + len; idx++){
-//				   this.state.remove(start);
-//			   }
-//		   }		   
-//	   }
-	   char temp = this.state.remove(start - 1);
-	   this.notifyObservers();
+   public char delete(int start) {
+	   char temp = '\u0000';
+	   
+	   if(start <= this.state.size()){
+		   try {
+			   temp = this.state.remove(start - 1);
+		   } catch (IndexOutOfBoundsException exception){
+			   return temp;
+		   }
+		   this.notifyObservers();
+	   }	   
 	   return temp;
    }
    
@@ -160,17 +140,24 @@ public final class TextConcrete extends Text
     */
    public char deleteAfter(int start)
    {
-//	   if(start == end){
-//			   this.state.remove(start);
-//	   } else {		   
-//		   int len = end - start;
-//		   for(int idx = start; idx < start + len; idx++){
-//			   this.state.remove(start);
-//		   }  
-//		}	
-	   char temp = this.state.remove(start);	   
+	   char temp = '\u0000';
+	   
+	   if(start > this.state.size()){
+		   start = this.state.size();
+	   }
+	   
+	   try {
+		   temp = this.state.remove(start);
+	   } catch (IndexOutOfBoundsException exception){
+		   return temp;
+	   }
 	   this.notifyObservers();
 	   return temp;
+	   
+   }
+   
+   public void clearClipBoard(){
+	   this.clipboard.save("");
    }
    
    /**
@@ -207,17 +194,4 @@ public final class TextConcrete extends Text
 	   }
 	   this.notifyObservers();
    }
-   
-//   public CommandUndoable createMemento() 
-//   {
-//	   CommandUndoable mem = new CommandUndoable();
-//	   mem.setState(getState());
-//	   return mem;
-//   }
-//   
-//   public void restoreMemento(CommandUndoable com) 
-//   {
-//	   setState(com.getState());
-//   }
-//  
 }

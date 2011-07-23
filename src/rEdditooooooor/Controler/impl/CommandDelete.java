@@ -20,16 +20,15 @@ public class CommandDelete extends CommandUndoable implements IEditorCommand
    {
    }
    
-   public void execute() 
+   public boolean execute() 
    {
 	   this.character = text.delete(this.start);
+	   if(this.character == '\u0000'){
+		   return false;
+	   }
+	   return true;
    }
 
-   @Override
-	public void executeFrom(int aStart, int aEnd) {
-	   this.character = text.delete(this.start + aStart);
-	}
-   
    @Override
    public void unexecute() {
 	   text.insert(start, character);
@@ -38,6 +37,11 @@ public class CommandDelete extends CommandUndoable implements IEditorCommand
    @Override
 	public int getStart() {
 		return this.start;
+	}
+ 
+   @Override
+	public int getEnd() {
+		return this.end;
 	}
    
    public void setCarets(int aStart, int aEnd){

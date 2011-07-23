@@ -19,16 +19,15 @@ public class CommandPaste extends CommandUndoable implements IEditorCommand
    {	  
    }
    
-   public void execute() 
+   public boolean execute() 
    {
 	   this.end = text.paste(this.start);
+	   if(this.end == -1){
+		   return false;
+	   }
+	   return true;
    }
 
-   @Override
-	public void executeFrom(int aStart, int aEnd) {
-	   this.end = text.paste(this.start + aStart);
-	}
-   
    @Override
    public void unexecute() {
 	   	text.cut(start, start + end);
@@ -38,7 +37,11 @@ public class CommandPaste extends CommandUndoable implements IEditorCommand
 	public int getStart() {
 		return this.start;
 	}
-   
+ 
+   @Override
+	public int getEnd() {
+		return this.end;
+	}   
    
    public void setCarets(int aStart, int aEnd){
 	   this.start = aStart;

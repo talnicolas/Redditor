@@ -11,5 +11,5 @@ public interface IEditorCommand
 	/**
 	 * Execute the specific command on the Model (TextConcrete)
      */
-	public void execute();
+	public boolean execute();
 }

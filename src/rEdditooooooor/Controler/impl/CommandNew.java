@@ -9,6 +9,7 @@ import rEdditooooooor.Model.TextConcrete;
 public class CommandNew implements IEditorCommand 
 {
 	private TextConcrete text;
+	private CommandManager cM;
    /**
     * Default constructor
     */
@@ -16,15 +17,19 @@ public class CommandNew implements IEditorCommand
    {
    }
    
-   public void execute() 
+   public boolean execute() 
    {
-	   CommandManager cM = CommandManager.getInstance();
 	   cM.clearAll();
 	   text.resetEverything();
+	   return true;
    }
    
    public void setText(TextConcrete aText) {
 	   this.text = aText;
+   }
+   
+   public void setCommandManager(CommandManager aCommandManager) {
+	   this.cM = aCommandManager;
    }
   
 }

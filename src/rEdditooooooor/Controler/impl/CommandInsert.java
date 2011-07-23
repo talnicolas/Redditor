@@ -20,15 +20,10 @@ public class CommandInsert extends CommandUndoable implements IEditorCommand
    {
    }
    
-   public void execute() {
-	   text.insert(this.start, this.character);
+   public boolean execute() {
+	   return text.insert(this.start, this.character);
    }
-   
-   @Override
-	public void executeFrom(int aStart, int aEnd) {
-	   text.insert(this.start + aStart, this.character);
-	}
-   
+
    @Override
    public void unexecute() {
 	   
@@ -38,6 +33,11 @@ public class CommandInsert extends CommandUndoable implements IEditorCommand
    @Override
 	public int getStart() {
 		return this.start;
+	}
+ 
+   @Override
+	public int getEnd() {
+		return this.end;
 	}
    
    public void setCarets(int aStart, int aEnd){

@@ -6,7 +6,7 @@ import rEdditooooooor.Controler.IEditorCommand;
 import rEdditooooooor.Model.TextConcrete;
 
 
-public class CommandCopy implements IEditorCommand 
+public class CommandCopy extends CommandUndoable implements IEditorCommand 
 {
 	private int start;
 	private int end;
@@ -19,9 +19,9 @@ public class CommandCopy implements IEditorCommand
    {
    }
    
-   public void execute() 
-   {
-	   this.text.copy(this.start, this.end);
+   public boolean execute() 
+   {	   
+	   return this.text.copy(this.start, this.end);
    }
    
    public void setCarets(int aStart, int aEnd){
@@ -31,5 +31,28 @@ public class CommandCopy implements IEditorCommand
    
    public void setText(TextConcrete aText){
 	   this.text = aText;
-   }   
+   }
+	
+	@Override
+	public void unexecute() {
+		this.text.clearClipBoard();
+	}
+	
+	@Override
+	public int getStart() {
+		return this.start;
+	}
+	
+	@Override
+	public int getEnd() {
+		return this.end;
+	}
+	
+	@Override
+	public CommandUndoable getClone() {
+		CommandCopy com = new CommandCopy();
+		com.setCarets(start, end);
+		com.setText(text);
+		return com;
+	}   
 }

@@ -12,11 +12,12 @@ import rEdditooooooor.Model.TextConcrete;
  */
 public final class CommandManager {
 
-	private static final CommandManager INSTANCECM = new CommandManager();
 	private List<CommandUndoable> commandsUndo;
 	private List<CommandUndoable> commandsRedo;
 	private List<CommandUndoable> recordings;
 	private boolean recordMode;
+	private boolean replayable;
+	private int startRecordIdx;
 	
 	private int start;
 	private int end;
@@ -25,32 +26,37 @@ public final class CommandManager {
 	/**
 	 * Default constructor
 	 */
-	private CommandManager() {
+	public CommandManager() {
 		commandsUndo = new ArrayList<CommandUndoable>();
 		commandsRedo = new ArrayList<CommandUndoable>();
 		recordings = new ArrayList<CommandUndoable>();
 		recordMode = false;
 	}
 		
-	public void executeCommand(TextConcrete text, IEditorCommand command){
+	public boolean executeCommand(TextConcrete text, IEditorCommand command){
 		if(command instanceof CommandUndoable) { 
 			((CommandUndoable) command).setCarets(start, end);
 			((CommandUndoable) command).setText(text);
 			if(command instanceof CommandInsert){
 				((CommandInsert) command).setChar(character);
 			} 
-			command.execute();
-			commandsUndo.add(0, ((CommandUndoable) command).getClone());
+			if(command.execute()) {
+				CommandUndoable temp = ((CommandUndoable) command).getClone();
+				commandsUndo.add(0, temp);
 
-			recordings.add(((CommandUndoable) command).getClone());
+				if(recordMode){
+					recordings.add(temp);
+			}
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			if(command instanceof CommandNew){
 				((CommandNew) command).setText(text);
-			} else if(command instanceof CommandCopy){
-				((CommandCopy) command).setCarets(start, end);
-				((CommandCopy) command).setText(text);
+				((CommandNew) command).setCommandManager(this);				
 			} 
-			command.execute();
+			return command.execute();
 		}
 	}
 	
@@ -58,6 +64,7 @@ public final class CommandManager {
 		if(recordings.size() > 0){
 			recordings.clear();
 		}
+		startRecordIdx = this.start;
 		recordMode = true;
 	}
 	
@@ -69,24 +76,21 @@ public final class CommandManager {
 		recordings.clear();
 	}
 	
-	public void executeCommandPlay(final int start, final int end) {
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {					
-				for(int idx = 0; idx < recordings.size(); idx++){	
-					CommandUndoable com = recordings.get(idx);
-					com.executeFrom(start, end);
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException interruptedException) {
-						interruptedException.printStackTrace();
-					}
-				}	  
+	public boolean executeCommandPlay(final int start, final int end) {	
+		replayable = true;		
+		int idx = 0;
+		while(replayable && idx < recordings.size()){
+			CommandUndoable com = recordings.get(idx).getClone();
+			com.setCarets(start + (com.getStart() - startRecordIdx), end + (com.getEnd() - startRecordIdx));
+			if(!com.execute()){
+				executeCommandReset();
+				replayable = false;
 			}
-		});
-		thread.start();
+			idx++;
+		}		
+		return replayable;
 	}
-	
+		
 	/**
 	* Save an undoable command for undo purpose
 	* @param command an undoable command
@@ -121,22 +125,20 @@ public final class CommandManager {
 	public void setCarets(int aStart, int aEnd){
 		this.start = aStart;
 		this.end = aEnd;
+		if(this.start > this.end){
+			int back = this.start;
+			this.start = this.end;
+			this.end = back;
+		}
 	}
 	
 	public void setCharacter(char aCharacter) {
 		this.character = aCharacter;
 	}
-
+	
 	public void clearAll(){
 		this.commandsRedo.clear();
 		this.commandsUndo.clear();
 		this.recordings.clear();
-	}
-	
-	/**
-	 * @return the unique instance of CommandManager
-	 */
-	public static synchronized CommandManager getInstance() {
-		return INSTANCECM;
-	}
+	}	
 }

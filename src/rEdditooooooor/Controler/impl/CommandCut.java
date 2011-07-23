@@ -16,13 +16,8 @@ public class CommandCut extends CommandUndoable implements IEditorCommand {
 	}
 	
 	@Override
-	public void execute() {
-		text.cut(this.start, this.end);
-	}
-	
-	@Override
-	public void executeFrom(int aStart, int aEnd) {
-		text.cut(this.start + aStart, this.end + aEnd);
+	public boolean execute() {
+		return text.cut(this.start, this.end);
 	}
 	
 	@Override
@@ -33,6 +28,11 @@ public class CommandCut extends CommandUndoable implements IEditorCommand {
 	@Override
 	public int getStart() {
 		return this.start;
+	}
+	 
+   @Override
+	public int getEnd() {
+		return this.end;
 	}
 	
 	public void setCarets(int aStart, int aEnd){

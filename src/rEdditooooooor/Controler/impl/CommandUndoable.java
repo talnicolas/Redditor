@@ -8,13 +8,11 @@ import rEdditooooooor.Model.TextConcrete;
  */
 public abstract class CommandUndoable implements IEditorCommand
 {
-	protected CommandManager cM = CommandManager.getInstance();
-	
-	public abstract void executeFrom(int start, int end);
-	
 	public abstract void unexecute();
 	
 	public abstract int getStart();
+	
+	public abstract int getEnd();
 	
 	public abstract void setCarets(int start, int end);
 	

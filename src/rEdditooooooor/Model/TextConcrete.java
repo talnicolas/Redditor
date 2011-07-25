@@ -127,28 +127,6 @@ public final class TextConcrete extends Text
    }
    
    /**
-    * Delete the following character in the state
-    * @param start the index where the deletion starts (will delete start)
-    */
-   public char deleteAfter(int start)
-   {
-	   char temp = '\u0000';
-	   
-	   if(start > this.state.size()){
-		   start = this.state.size();
-	   }
-	   
-	   try {
-		   temp = this.state.remove(start);
-	   } catch (IndexOutOfBoundsException exception){
-		   return temp;
-	   }
-	   this.notifyObservers();
-	   return temp;
-	   
-   }
-   
-   /**
     * Delete the clipboard value when the copy is undone
     */
    public void clearClipBoard(){

@@ -337,7 +337,7 @@ public class EditorUI extends JFrame implements IEditorView
 				stopItem.setEnabled(true);
 			}
 			commandManager.setCarets(caretStart, caretStop);
-			commandManager.executeCommandStart();
+			commandManager.startRecording();
 		}		
 	}
 	
@@ -350,7 +350,7 @@ public class EditorUI extends JFrame implements IEditorView
 				resetButton.setEnabled(true);
 				resetItem.setEnabled(true);
 			}
-			commandManager.executeCommandStop();
+			commandManager.stopRecording();
 		}		
 	}
 	
@@ -360,7 +360,7 @@ public class EditorUI extends JFrame implements IEditorView
 			if(caretStop != caretStart){
 				deleteBeforeCommand();
 			}
-			if(!commandManager.executeCommandPlay(caretStart, caretStop)){
+			if(!commandManager.playRecordings(caretStart, caretStop)){
 				JOptionPane.showMessageDialog(rootPane, "Apparently, one of your recorded action is not replayable, sorry.", "Error", JOptionPane.INFORMATION_MESSAGE);
 				playButton.setEnabled(false);
 				playItem.setEnabled(false);
@@ -384,7 +384,7 @@ public class EditorUI extends JFrame implements IEditorView
 				stopItem.setEnabled(false);
 				
 			}
-			commandManager.executeCommandReset();
+			commandManager.resetRecordings();
 		}		
 	}
 	class KeyboardListener extends KeyAdapter {	

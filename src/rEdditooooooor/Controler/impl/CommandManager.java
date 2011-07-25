@@ -70,7 +70,7 @@ public final class CommandManager {
 	/**
 	 * Start the recording. Clear the buffer if it isn't empty
 	 */
-	public void executeCommandStart() {
+	public void startRecording() {
 		if(recordings.size() > 0){
 			recordings.clear();
 		}
@@ -81,14 +81,14 @@ public final class CommandManager {
 	/**
 	 * Stop the recording
 	 */
-	public void executeCommandStop() {		
+	public void stopRecording() {		
 		recordMode = false;
 	}
 	
 	/**
 	 * Reset the recordings buffer
 	 */
-	public void executeCommandReset() {
+	public void resetRecordings() {
 		recordings.clear();
 	}
 	
@@ -100,35 +100,19 @@ public final class CommandManager {
 	 * @param end position where the replay ends
 	 * @return true if the replay executed successfully
 	 */
-	public boolean executeCommandPlay(final int start, final int end) {	
+	public boolean playRecordings(final int start, final int end) {	
 		replayable = true;		
 		int idx = 0;
 		while(replayable && idx < recordings.size()){
 			CommandUndoable com = recordings.get(idx).getClone();
 			com.setCarets(start + (com.getStart() - startRecordIdx), end + (com.getEnd() - startRecordIdx));
 			if(!com.execute()){
-				executeCommandReset();
+				resetRecordings();
 				replayable = false;
 			}
 			idx++;
 		}		
 		return replayable;
-	}
-		
-	/**
-	* Save an undoable command for undo purpose
-	* @param command an undoable command
-	*/
-	public void setCommandUndo(CommandUndoable command){
-		this.commandsUndo.add(0, command);
-	}
-		
-	/**
-	* Save an undoable command for redo purpose
-	* @param command an undoable command
-	*/
-	public void setCommandRedo(CommandUndoable command){
-		this.commandsRedo.add(0, command);
 	}
 	
 	/**

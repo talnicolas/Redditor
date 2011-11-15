@@ -145,8 +145,8 @@ public class EditorUI extends JFrame implements IEditorView
 		JMenu menuAbout= new JMenu("?");
 		
 		JMenuItem aboutItem = new JMenuItem("About...");
-		final String message = "\trEdditooooooor v2.0\n\n" +
-						 "\tBy Frederic Brockow and Nicolas Tallineau\n\n" + 
+		final String message = "\trEdditooooooor v1.0\n\n" +
+						 "\tBy Nicolas Tallineau\n\n" + 
 						 "\tFind the sources at: github.com/talnicolas";
 		aboutItem.addActionListener(new ActionListener() {			
 			@Override

@@ -22,7 +22,7 @@ http://www.java.com/en/download/index.jsp
     1. Jar generation
 
 
- .class files are available in the "bin" folder, so you don't have to compile the project. If you want to modify the sources and need to recompile**, please refer to the following link for instructions : 
+ .class files are available in the "bin" folder, so you don't have to compile the project. If you want to modify the sources and need to recompile**, please refer to the following link for instructions (or use an IDE) : 
 
 http://download.oracle.com/javase/1.4.2/docs/tooldocs/windows/javac.html
 

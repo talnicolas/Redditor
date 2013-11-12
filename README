@@ -1,5 +1,68 @@
 ******************************
-***** rEdditooooooor v.2 *****
+******* rEdditooooooor *******
+******************************
+******************************
+***                        ***
+***     Jar generation     ***
+***                        ***
+***          ****          *** 
+***                        ***
+***   Program execution    *** 
+***                        ***
+***                        ***
+******************************
+******************************
+
+You need to have Java installed on your computer to run this program. 
+If you don't, you can download it here : 
+
+http://www.java.com/en/download/index.jsp
+
+
+    1. Jar generation
+
+
+ .class files are available in the "bin" folder, so you don't have to compile the project. If you want to modify the sources and need to recompile**, please refer to the following link for instructions : 
+
+http://download.oracle.com/javase/1.4.2/docs/tooldocs/windows/javac.html
+
+ Steps to create the Jar:
+
+   - Open a console/terminal
+   - Go to the "bin" folder of this project
+   - Enter the following command: 
+
+              jar cvfm redditor.jar MANIFEST.MF *
+
+ A file redditor.jar has been generated in the current folder (bin).
+
+ **Attention: if you modify the sources, you will need to manually create a MANIFEST.MF file in the "bin" folder that contains the following:
+ 
+Main-Class: rEdditooooooor/StartUp
+(a line break at the end of the line is required)
+
+
+    2. Program execution
+
+ 
+ Open a console/terminal and go where the jar file is located. Simply enter the following command:
+
+              java -jar redditor.jar
+
+
+ *For Windows user, you can just double-click on the Jar file to start the application.
+
+
+
+
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+------------------------          FRANÇAIS         ---------------------------
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+******************************
+******* rEdditooooooor *******
 ******************************
 ******************************
 ***                        ***
@@ -69,8 +132,3 @@ http://download.oracle.com/javase/1.4.2/docs/tooldocs/windows/javac.html
  *Pour les utilisateurs de Windows, un simple double-clique sur le fichier "nom choisi".jar devrait suffire pour lancer l'application.
 
 
-
-
-  Merci d'utiliser notre produit.
-
-  L'équipe de développement.
